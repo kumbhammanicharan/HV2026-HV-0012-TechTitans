@@ -1,15 +1,26 @@
 HACKVERSE 2026 — Smart Campus Complaint, Maintenance & Service Request Tracking System
 <img width="1907" height="884" alt="image" src="https://github.com/user-attachments/assets/84785ba6-f34a-446c-9fae-41f5cc8925b5" />
-
-👥 Team
-Team ID: HV-0012  
+<img width="1919" height="878" alt="image" src="https://github.com/user-attachments/assets/a13552ed-ee9f-4e24-aad1-d887051b3178" />
+<img width="1919" height="878" alt="image" src="https://github.com/user-attachments/assets/23cb215d-9715-4be4-9e7a-c35341185281" />
+<img width="1912" height="879" alt="image" src="https://github.com/user-attachments/assets/4913690f-6059-4e96-b27a-a936e0c64a7e" />
+<img width="1912" height="879" alt="image" src="https://github.com/user-attachments/assets/01b469fb-ff3b-4f8c-b78b-cd94eb9cb330" />
+<img width="1910" height="888" alt="image" src="https://github.com/user-attachments/assets/2245bf72-303f-4d5c-8079-447ebd53d161" />
+<img width="1919" height="875" alt="image" src="https://github.com/user-attachments/assets/2ce7bf38-6641-4f8c-a6ed-ddc67789a367" />
+<img width="1919" height="877" alt="image" src="https://github.com/user-attachments/assets/35bc9b6a-7851-475a-b217-450c409f6409" />
+<img width="1919" height="881" alt="image" src="https://github.com/user-attachments/assets/809be07a-bffa-4e75-abf5-1608e3e35498" />
+<img width="1914" height="891" alt="image" src="https://github.com/user-attachments/assets/1fe686be-b4e3-4378-82de-59a1c2ce5945" />
+👨‍💻 Team
+Team: TechTitans
+Hackathon: HACKVERSE 2026
+Team ID: HV2026-0012
+👥 Team Members
+Team ID: HV-0012
 Team Name: TechTitans
-Member	 Name
+Member	Name
 Member 1	Khubham Manicharan
 Member 2	Chelpuri Chandramshu
 Member 3	Goyal Rajender
 Member 4	Doneti Manjunath
-> Replace the member names and roles above with your actual team details.
 ---
 📌 Project Overview
 The Smart Campus Complaint, Maintenance & Service Request Tracking System is a role-based full-stack web application that digitizes the campus complaint and maintenance process.
@@ -18,7 +29,6 @@ Students can submit and track complaints.
 Staff/Technicians can manage assigned complaints and update their status.
 Administrators can assign complaints, manage users, and monitor resolution performance.
 The system provides complaint submission, tracking, assignment, status management, feedback, authentication, analytics, file uploads, and real-time communication infrastructure.
----
 🎯 Problem Statement
 Campus complaints related to infrastructure, electricity, internet, maintenance, facilities, and other services are often difficult to manage through manual processes.
 Problems with the existing approach
@@ -52,7 +62,6 @@ Complaint Resolved
 Student Provides Feedback
 ```
 Administrators can also monitor complaints, users, assignments, overdue complaints, categories, and staff performance through the dashboard.
----
 ✨ Key Features
 👨‍🎓 Student
 Student registration and login
@@ -122,7 +131,6 @@ User role identified
 Role-specific dashboard displayed
 ```
 Protected backend routes use authentication and role-verification middleware.
----
 🏗️ System Architecture
 ```text
 ┌─────────────────────────────┐
@@ -308,7 +316,6 @@ Major API areas include:
 /api/admin
 ```
 The APIs support authentication, complaint management, assignment, status updates, feedback, user management, and administrative analytics.
----
 🧭 Application Flow
 Student
 ```text
@@ -364,10 +371,8 @@ Uploaded files are served through:
 /uploads
 ```
 These files can be used for complaint images or resolution evidence.
----
 🔄 Real-Time Communication
 The backend includes Socket.IO infrastructure for real-time complaint-related events and updates between connected users and administrators.
----
 🛡️ Security
 The project includes:
 JWT authentication
@@ -391,7 +396,6 @@ Private keys
 Service-account credentials
 ```
 Make sure sensitive files are included in `.gitignore`.
----
 🧪 Testing & Build
 Run frontend tests:
 ```bash
@@ -427,12 +431,10 @@ Node.js + Express API
 MongoDB Atlas
 ```
 Production environment variables should be configured through the hosting platform and should never be committed to the repository.
----
 🎥 Demo
-Live Demo: [https://campuscare-frontend-izin.onrender.com]
-Demo Video: []
-Project Report:https://docs.google.com/document/d/18ICAu0q75QImEtOWjC-gAMUnEwZ3yQb_/edit?usp=drive_link&ouid=112175209800142235897&rtpof=true&sd=true
----
+Live Demo: https://campuscare-frontend-izin.onrender.com
+Demo Video: https://drive.google.com/file/d/1337mmr_HgEXwxr1OQXVjNvEqNjCw1BRc/view?usp=drive_link
+Project Report: https://docs.google.com/document/d/18ICAu0q75QImEtOWjC-gAMUnEwZ3yQb_/edit?usp=drive_link&ouid=112175209800142235897&rtpof=true&sd=true
 📸 Screenshots
 Add important screenshots of:
 Student dashboard
@@ -452,7 +454,6 @@ Additional automation features
 Integration with other campus services
 ---
 👨‍💻 Team
-Team: TechTitans  
-Hackathon: HACKVERSE 2026  
-Team ID:HV2026-0012
----
+Team: TechTitans
+Hackathon: HACKVERSE 2026
+Team ID: HV2026-0012
