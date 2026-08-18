@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import {
     Link,
     useHistory,
@@ -576,7 +575,6 @@ const Navbar = ({
                 </div>
 
             )}
-
         </header>
     );
 };

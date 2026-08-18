@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import AdminAIInsights from '../components/AdminAIInsights';
 import {
     Search,
     RefreshCw,
@@ -655,6 +656,13 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         loadDashboard();
+
+        // Keep dashboard analytics and AI Insights current.
+        const refreshInterval = setInterval(() => {
+            loadDashboard(false);
+        }, 60000);
+
+        return () => clearInterval(refreshInterval);
     }, []);
 
 
@@ -1613,6 +1621,18 @@ const AdminDashboard = () => {
                 {activeTab === 'overview' && (
 
                     <div className="space-y-6">
+
+                        {/* AI Insights */}
+                        <AdminAIInsights
+                            complaints={complaints}
+                            performance={performance}
+                            complaintStats={complaintStats}
+                            performanceSummary={performanceSummary}
+                            onRefresh={() =>
+                                loadDashboard(false)
+                            }
+                            refreshing={refreshing}
+                        />
 
                         {/* Stats */}
 

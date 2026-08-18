@@ -8,6 +8,7 @@ import {
 import { jwtDecode } from 'jwt-decode';
 
 import Navbar from './components/Navbar';
+import StudentAssistant from './components/StudentAssistant';
 
 import Home from './pages/Home';
  
@@ -299,6 +300,9 @@ const App = () => {
                     }
                 />
 
+                {isLoggedIn && userRole === 'student' && (
+                    <StudentAssistant />
+                )}
                 <main className="min-h-[calc(100vh-72px)]">
 
                     <Switch>
