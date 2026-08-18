@@ -29,7 +29,7 @@ const Login = ({ setIsLoggedIn, onLoginSuccess }) => {
 
         try {
             const response = await axios.post(
-                '/api/auth/login',
+                'https://campuscare-backend-jq45.onrender.com/api/auth/login',
                 {
                     email: email.trim(),
                     password,

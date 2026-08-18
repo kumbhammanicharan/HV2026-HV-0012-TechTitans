@@ -72,7 +72,7 @@ const Register = () => {
 
         try {
             await axios.post(
-                '/api/auth/register',
+                'https://campuscare-backend-jq45.onrender.com/api/auth/register',
                 {
                     email: email.trim(),
                     password,
