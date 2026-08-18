@@ -1,4 +1,6 @@
 HACKVERSE 2026 — Smart Campus Complaint, Maintenance & Service Request Tracking System
+<img width="1907" height="884" alt="image" src="https://github.com/user-attachments/assets/84785ba6-f34a-446c-9fae-41f5cc8925b5" />
+
 👥 Team
 Team ID: HV-0012  
 Team Name: TechTitans
