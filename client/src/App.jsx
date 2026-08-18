@@ -8,30 +8,52 @@ import {
 import { jwtDecode } from 'jwt-decode';
 
 import Navbar from './components/Navbar';
+
 import Home from './pages/Home';
+ 
+
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+
 import ComplaintForm from './components/Complaint/ComplaintForm';
+
 import MyComplaints from './pages/MyComplaints';
 import ComplaintDetail from './pages/ComplaintDetail';
+
 import AdminDashboard from './pages/AdminDashboard';
 import StaffDashboard from './pages/StaffDashboard';
-
+import Profile from './pages/profile';
 const App = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userRole, setUserRole] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    const [userInfo, setUserInfo] = useState({});
 
-    const [theme, setTheme] = useState(() => {
-        return (
-            localStorage.getItem('campuscare-theme') ||
-            'light'
-        );
-    });
+    const [isLoggedIn, setIsLoggedIn] =
+        useState(false);
 
-    // Apply theme
+    const [userRole, setUserRole] =
+        useState('');
+
+    const [userEmail, setUserEmail] =
+        useState('');
+
+    const [userInfo, setUserInfo] =
+        useState({});
+
+    const [theme, setTheme] =
+        useState(() => {
+            return (
+                localStorage.getItem(
+                    'campuscare-theme'
+                ) || 'light'
+            );
+        });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Apply Theme
+    |--------------------------------------------------------------------------
+    */
+
     useEffect(() => {
+
         document.documentElement.classList.toggle(
             'dark',
             theme === 'dark'
@@ -41,22 +63,35 @@ const App = () => {
             'campuscare-theme',
             theme
         );
+
     }, [theme]);
 
-    // Restore authentication state
+
+    /*
+    |--------------------------------------------------------------------------
+    | Restore Authentication
+    |--------------------------------------------------------------------------
+    */
+
     useEffect(() => {
-        const token = localStorage.getItem('token');
+
+        const token =
+            localStorage.getItem('token');
 
         if (!token) {
+
             setIsLoggedIn(false);
             setUserRole('');
             setUserEmail('');
             setUserInfo({});
+
             return;
         }
 
         try {
-            const decoded = jwtDecode(token);
+
+            const decoded =
+                jwtDecode(token);
 
             setIsLoggedIn(true);
 
@@ -71,12 +106,21 @@ const App = () => {
             );
 
             setUserInfo({
-                name: decoded.name || '',
+                name:
+                    decoded.name || '',
+
                 department:
                     decoded.department || '',
-                email: decoded.email || ''
+
+                email:
+                    decoded.email || '',
+
+                role:
+                    decoded.role || ''
             });
+
         } catch (error) {
+
             console.error(
                 'Invalid authentication token:',
                 error
@@ -90,10 +134,18 @@ const App = () => {
             setUserEmail('');
             setUserInfo({});
         }
+
     }, []);
 
-    // Logout
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logout
+    |--------------------------------------------------------------------------
+    */
+
     const handleLogout = () => {
+
         localStorage.removeItem('token');
         localStorage.removeItem('user');
 
@@ -105,22 +157,31 @@ const App = () => {
         window.location.href = '/';
     };
 
-    // Login success
+
+    /*
+    |--------------------------------------------------------------------------
+    | Login Success
+    |--------------------------------------------------------------------------
+    */
+
     const handleLoginSuccess = (
         response,
         history
     ) => {
+
         const token =
-            response.data.token;
+            response.data?.token;
 
         const user =
-            response.data.user;
+            response.data?.user;
 
         if (!token || !user) {
+
             console.error(
                 'Invalid login response:',
                 response.data
             );
+
             return;
         }
 
@@ -147,47 +208,92 @@ const App = () => {
         );
 
         setUserInfo({
-            name: user.name || '',
+            name:
+                user.name || '',
+
             department:
                 user.department || '',
-            email: user.email || ''
+
+            email:
+                user.email || '',
+
+            role:
+                user.role || ''
         });
 
-        if (user.role === 'admin') {
+        /*
+        |----------------------------------------------------------------------
+        | Redirect according to role
+        |----------------------------------------------------------------------
+        */
+
+        if (
+            user.role ===
+            'admin'
+        ) {
+
             history.push(
                 '/admin/dashboard'
             );
+
         } else if (
-            user.role === 'staff'
+            user.role ===
+            'staff'
         ) {
+
             history.push(
                 '/staff/dashboard'
             );
+
         } else {
+
             history.push('/');
         }
     };
 
-    // Toggle theme
+
+    /*
+    |--------------------------------------------------------------------------
+    | Toggle Theme
+    |--------------------------------------------------------------------------
+    */
+
     const toggleTheme = () => {
-        setTheme((current) =>
-            current === 'dark'
-                ? 'light'
-                : 'dark'
+
+        setTheme(
+            (current) =>
+                current === 'dark'
+                    ? 'light'
+                    : 'dark'
         );
     };
 
+
     return (
+
         <Router>
+
             <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
 
                 <Navbar
-                    isLoggedIn={isLoggedIn}
-                    onLogout={handleLogout}
-                    userRole={userRole}
-                    userEmail={userEmail}
-                    userInfo={userInfo}
-                    theme={theme}
+                    isLoggedIn={
+                        isLoggedIn
+                    }
+                    onLogout={
+                        handleLogout
+                    }
+                    userRole={
+                        userRole
+                    }
+                    userEmail={
+                        userEmail
+                    }
+                    userInfo={
+                        userInfo
+                    }
+                    theme={
+                        theme
+                    }
                     onToggleTheme={
                         toggleTheme
                     }
@@ -197,15 +303,19 @@ const App = () => {
 
                     <Switch>
 
-                        {/* =========================
+                        {/* ==================================================
                             LOGIN
-                        ========================== */}
+                        ================================================== */}
+
                         <Route
                             path="/login/:role"
                             render={(props) =>
                                 isLoggedIn ? (
+
                                     <Redirect to="/" />
+
                                 ) : (
+
                                     <Login
                                         {...props}
                                         setIsLoggedIn={
@@ -215,157 +325,259 @@ const App = () => {
                                             handleLoginSuccess
                                         }
                                     />
+
                                 )
                             }
                         />
 
-                        {/* =========================
+
+                        {/* ==================================================
                             REGISTRATION
-                        ========================== */}
+                        ================================================== */}
+
                         <Route
                             path="/register/:role"
                             render={(props) =>
                                 isLoggedIn ? (
+
                                     <Redirect to="/" />
+
                                 ) : (
+
                                     <Register
                                         {...props}
                                     />
+
                                 )
                             }
                         />
 
-                        {/* =========================
+
+                        {/* ==================================================
+                            PROFILE
+                        ================================================== */}
+
+                        <Route
+                            path="/profile"
+                            render={() =>
+                                isLoggedIn ? (
+
+                                    <Profile
+                                        userRole={
+                                            userRole
+                                        }
+                                        onLogout={
+                                            handleLogout
+                                        }
+                                    />
+
+                                ) : (
+
+                                    <Redirect to="/login/student" />
+
+                                )
+                            }
+                        />
+
+
+                        {/* ==================================================
                             NEW COMPLAINT
-                        ========================== */}
+                        ================================================== */}
+
                         <Route
                             path="/complaints/new"
-                        >
-                            {isLoggedIn &&
-                            userRole ===
-                                'student' ? (
-                                <ComplaintForm />
-                            ) : (
-                                <Redirect
-                                    to={
-                                        userRole ===
-                                        'admin'
-                                            ? '/admin/dashboard'
-                                            : userRole ===
-                                              'staff'
-                                            ? '/staff/dashboard'
-                                            : '/login/student'
-                                    }
-                                />
-                            )}
-                        </Route>
+                            render={() => {
 
-                        {/* =========================
+                                if (
+                                    isLoggedIn &&
+                                    userRole ===
+                                        'student'
+                                ) {
+
+                                    return (
+                                        <ComplaintForm />
+                                    );
+                                }
+
+                                return (
+                                    <Redirect
+                                        to={
+                                            userRole ===
+                                            'admin'
+                                                ? '/admin/dashboard'
+                                                : userRole ===
+                                                  'staff'
+                                                ? '/staff/dashboard'
+                                                : '/login/student'
+                                        }
+                                    />
+                                );
+                            }}
+                        />
+
+
+                        {/* ==================================================
                             MY COMPLAINTS
-                        ========================== */}
+                        ================================================== */}
+
                         <Route
                             path="/my-complaints"
-                        >
-                            {isLoggedIn &&
-                            userRole ===
-                                'student' ? (
-                                <MyComplaints />
-                            ) : (
-                                <Redirect
-                                    to={
-                                        userRole ===
-                                        'admin'
-                                            ? '/admin/dashboard'
-                                            : userRole ===
-                                              'staff'
-                                            ? '/staff/dashboard'
-                                            : '/login/student'
-                                    }
-                                />
-                            )}
-                        </Route>
+                            render={() => {
 
-                        {/* =========================
+                                if (
+                                    isLoggedIn &&
+                                    userRole ===
+                                        'student'
+                                ) {
+
+                                    return (
+                                        <MyComplaints />
+                                    );
+                                }
+
+                                return (
+                                    <Redirect
+                                        to={
+                                            userRole ===
+                                            'admin'
+                                                ? '/admin/dashboard'
+                                                : userRole ===
+                                                  'staff'
+                                                ? '/staff/dashboard'
+                                                : '/login/student'
+                                        }
+                                    />
+                                );
+                            }}
+                        />
+
+
+                        {/* ==================================================
                             COMPLAINT DETAILS
-                        ========================== */}
+                        ================================================== */}
+
                         <Route
                             path="/complaints/:id"
-                        >
-                            {isLoggedIn &&
-                            userRole ===
-                                'student' ? (
-                                <ComplaintDetail />
-                            ) : (
-                                <Redirect
-                                    to={
-                                        userRole ===
-                                        'admin'
-                                            ? '/admin/dashboard'
-                                            : userRole ===
-                                              'staff'
-                                            ? '/staff/dashboard'
-                                            : '/login/student'
-                                    }
-                                />
-                            )}
-                        </Route>
+                            render={() => {
 
-                        {/* =========================
+                                if (
+                                    isLoggedIn &&
+                                    userRole ===
+                                        'student'
+                                ) {
+
+                                    return (
+                                        <ComplaintDetail />
+                                    );
+                                }
+
+                                return (
+                                    <Redirect
+                                        to={
+                                            userRole ===
+                                            'admin'
+                                                ? '/admin/dashboard'
+                                                : userRole ===
+                                                  'staff'
+                                                ? '/staff/dashboard'
+                                                : '/login/student'
+                                        }
+                                    />
+                                );
+                            }}
+                        />
+
+
+                        {/* ==================================================
                             ADMIN DASHBOARD
-                        ========================== */}
+                        ================================================== */}
+
                         <Route
                             path="/admin/dashboard"
-                        >
-                            {isLoggedIn &&
-                            userRole ===
-                                'admin' ? (
-                                <AdminDashboard />
-                            ) : (
-                                <Redirect to="/login/admin" />
-                            )}
-                        </Route>
+                            render={() => {
 
-                        {/* =========================
+                                if (
+                                    isLoggedIn &&
+                                    userRole ===
+                                        'admin'
+                                ) {
+
+                                    return (
+                                        <AdminDashboard />
+                                    );
+                                }
+
+                                return (
+                                    <Redirect
+                                        to="/login/admin"
+                                    />
+                                );
+                            }}
+                        />
+
+
+                        {/* ==================================================
                             STAFF / TECHNICIAN DASHBOARD
-                        ========================== */}
+                        ================================================== */}
+
                         <Route
                             path="/staff/dashboard"
-                        >
-                            {isLoggedIn &&
-                            userRole ===
-                                'staff' ? (
-                                <StaffDashboard />
-                            ) : (
-                                <Redirect to="/login/staff" />
-                            )}
-                        </Route>
+                            render={() => {
 
-                        {/* =========================
+                                if (
+                                    isLoggedIn &&
+                                    userRole ===
+                                        'staff'
+                                ) {
+
+                                    return (
+                                        <StaffDashboard />
+                                    );
+                                }
+
+                                return (
+                                    <Redirect
+                                        to="/login/staff"
+                                    />
+                                );
+                            }}
+                        />
+
+
+                        {/* ==================================================
                             HOME
-                        ========================== */}
-                        <Route
-                            path="/"
-                            exact
-                        >
-                            <Home
-                                userEmail={
-                                    userEmail
-                                }
-                                userRole={
-                                    userRole
-                                }
-                            />
-                        </Route>
+                        ================================================== */}
 
-                        {/* =========================
+                        <Route
+                            exact
+                            path="/"
+                            render={() => (
+
+                                <Home
+                                    userEmail={
+                                        userEmail
+                                    }
+                                    userRole={
+                                        userRole
+                                    }
+                                />
+
+                            )}
+                        />
+
+
+                        {/* ==================================================
                             FALLBACK
-                        ========================== */}
+                        ================================================== */}
+
                         <Redirect to="/" />
 
                     </Switch>
 
                 </main>
+
             </div>
+
         </Router>
     );
 };
