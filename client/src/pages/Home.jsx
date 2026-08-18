@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL =
+    'https://campuscare-backend-jq45.onrender.com';
+
 const Home = ({ userEmail, userRole }) => {
     const history = useHistory();
 
@@ -25,9 +28,15 @@ const Home = ({ userEmail, userRole }) => {
                     complaintsResponse,
                     usersResponse,
                 ] = await Promise.allSettled([
-                    axios.get('/api/feedback'),
-                    axios.get('/api/stats/complaints'),
-                    axios.get('/api/stats/users'),
+                    axios.get(
+                        `${API_URL}/api/feedback`
+                    ),
+                    axios.get(
+                        `${API_URL}/api/stats/complaints`
+                    ),
+                    axios.get(
+                        `${API_URL}/api/stats/users`
+                    ),
                 ]);
 
                 if (!isMounted) return;
@@ -41,7 +50,9 @@ const Home = ({ userEmail, userRole }) => {
 
                     setFeedbacks(
                         Array.isArray(data)
-                            ? data.slice(-6).reverse()
+                            ? data
+                                  .slice(-6)
+                                  .reverse()
                             : []
                     );
                 }
@@ -195,6 +206,7 @@ const Home = ({ userEmail, userRole }) => {
                                 </div>
 
                                 <div className="mt-8 space-y-4">
+
                                     <div className="flex items-center gap-4 rounded-xl bg-slate-800 p-4">
                                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10">
                                             📝
@@ -246,10 +258,12 @@ const Home = ({ userEmail, userRole }) => {
                                             </p>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </section>
 
@@ -258,6 +272,7 @@ const Home = ({ userEmail, userRole }) => {
                 <section className="border-b border-slate-200 bg-white py-8 dark:border-slate-800 dark:bg-slate-900">
                     <div className="page-container">
                         <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+
                             <div>
                                 <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
                                     Quick actions
@@ -269,8 +284,8 @@ const Home = ({ userEmail, userRole }) => {
                             </div>
 
                             <div className="flex flex-wrap gap-3">
-                                {userRole ===
-                                    'student' && (
+
+                                {userRole === 'student' && (
                                     <>
                                         <button
                                             type="button"
@@ -298,8 +313,7 @@ const Home = ({ userEmail, userRole }) => {
                                     </>
                                 )}
 
-                                {userRole ===
-                                    'staff' && (
+                                {userRole === 'staff' && (
                                     <button
                                         type="button"
                                         onClick={() =>
@@ -313,8 +327,7 @@ const Home = ({ userEmail, userRole }) => {
                                     </button>
                                 )}
 
-                                {userRole ===
-                                    'admin' && (
+                                {userRole === 'admin' && (
                                     <button
                                         type="button"
                                         onClick={() =>
@@ -327,6 +340,7 @@ const Home = ({ userEmail, userRole }) => {
                                         Open Admin Dashboard
                                     </button>
                                 )}
+
                             </div>
                         </div>
                     </div>
@@ -499,12 +513,11 @@ const Home = ({ userEmail, userRole }) => {
                             feedbacks.map(
                                 (feedback) => (
                                     <div
-                                        key={
-                                            feedback._id
-                                        }
+                                        key={feedback._id}
                                         className="modern-card p-6"
                                     >
                                         <div className="flex items-center gap-4">
+
                                             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 font-bold text-white">
                                                 {(
                                                     feedback
@@ -528,6 +541,7 @@ const Home = ({ userEmail, userRole }) => {
                                                     CampusCare User
                                                 </p>
                                             </div>
+
                                         </div>
 
                                         <div className="mt-5">
@@ -592,6 +606,7 @@ const Home = ({ userEmail, userRole }) => {
                                 </p>
                             </div>
                         )}
+
                     </div>
                 </div>
             </section>
@@ -627,6 +642,7 @@ const Home = ({ userEmail, userRole }) => {
                             Create Your Account →
                         </button>
                     )}
+
                 </div>
             </section>
 
@@ -638,15 +654,18 @@ const Home = ({ userEmail, userRole }) => {
 
                         <div className="md:col-span-2">
                             <div className="flex items-center gap-3">
+
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 font-black text-white">
                                     C
                                 </div>
 
                                 <span className="text-xl font-black text-white">
-                                    Campus<span className="text-indigo-400">
+                                    Campus
+                                    <span className="text-indigo-400">
                                         Care
                                     </span>
                                 </span>
+
                             </div>
 
                             <p className="mt-5 max-w-md text-sm leading-7">
@@ -675,6 +694,7 @@ const Home = ({ userEmail, userRole }) => {
                             </h3>
 
                             <ul className="mt-4 space-y-3 text-sm">
+
                                 <li>
                                     <button
                                         onClick={() =>
@@ -713,11 +733,14 @@ const Home = ({ userEmail, userRole }) => {
                                         Administrator Login
                                     </button>
                                 </li>
+
                             </ul>
                         </div>
+
                     </div>
 
                     <div className="mt-10 flex flex-col gap-3 border-t border-slate-800 pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+
                         <p>
                             © {new Date().getFullYear()} CampusCare.
                             All rights reserved.
@@ -726,9 +749,11 @@ const Home = ({ userEmail, userRole }) => {
                         <p>
                             Smart Campus Complaint & Resolution Platform
                         </p>
+
                     </div>
                 </div>
             </footer>
+
         </div>
     );
 };

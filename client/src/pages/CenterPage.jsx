@@ -5,7 +5,8 @@ const roles = [
     {
         key: 'student',
         title: 'Student',
-        description: 'Submit complaints and track their progress.',
+        description:
+            'Submit complaints and track their progress.',
         icon: '🎓',
         login: '/login/student',
         register: '/register/student',
@@ -13,7 +14,8 @@ const roles = [
     {
         key: 'staff',
         title: 'Technician',
-        description: 'Manage assigned complaints and update progress.',
+        description:
+            'Manage assigned complaints and update progress.',
         icon: '🛠️',
         login: '/login/staff',
         register: '/register/staff',
@@ -21,7 +23,8 @@ const roles = [
     {
         key: 'admin',
         title: 'Administrator',
-        description: 'Manage complaints, staff assignments and analytics.',
+        description:
+            'Manage complaints, staff assignments and analytics.',
         icon: '📊',
         login: '/login/admin',
     },
@@ -110,6 +113,7 @@ const CenterPage = () => {
                         a better campus experience.
                     </p>
                 </div>
+
             </div>
         </div>
     );

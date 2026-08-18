@@ -24,9 +24,13 @@ const App = () => {
     const [userInfo, setUserInfo] = useState({});
 
     const [theme, setTheme] = useState(() => {
-        return localStorage.getItem('campuscare-theme') || 'light';
+        return (
+            localStorage.getItem('campuscare-theme') ||
+            'light'
+        );
     });
 
+    // Apply theme
     useEffect(() => {
         document.documentElement.classList.toggle(
             'dark',
@@ -39,6 +43,7 @@ const App = () => {
         );
     }, [theme]);
 
+    // Restore authentication state
     useEffect(() => {
         const token = localStorage.getItem('token');
 
@@ -54,7 +59,11 @@ const App = () => {
             const decoded = jwtDecode(token);
 
             setIsLoggedIn(true);
-            setUserRole(decoded.role || '');
+
+            setUserRole(
+                decoded.role || ''
+            );
+
             setUserEmail(
                 decoded.role === 'admin'
                     ? 'Admin'
@@ -63,7 +72,8 @@ const App = () => {
 
             setUserInfo({
                 name: decoded.name || '',
-                department: decoded.department || '',
+                department:
+                    decoded.department || '',
                 email: decoded.email || ''
             });
         } catch (error) {
@@ -73,6 +83,7 @@ const App = () => {
             );
 
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
 
             setIsLoggedIn(false);
             setUserRole('');
@@ -81,8 +92,10 @@ const App = () => {
         }
     }, []);
 
+    // Logout
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
 
         setIsLoggedIn(false);
         setUserRole('');
@@ -92,37 +105,72 @@ const App = () => {
         window.location.href = '/';
     };
 
-    const handleLoginSuccess = (response, history) => {
-        const token = response.data.token;
-        const user = response.data.user;
+    // Login success
+    const handleLoginSuccess = (
+        response,
+        history
+    ) => {
+        const token =
+            response.data.token;
 
-        localStorage.setItem('token', token);
+        const user =
+            response.data.user;
+
+        if (!token || !user) {
+            console.error(
+                'Invalid login response:',
+                response.data
+            );
+            return;
+        }
+
+        localStorage.setItem(
+            'token',
+            token
+        );
+
+        localStorage.setItem(
+            'user',
+            JSON.stringify(user)
+        );
 
         setIsLoggedIn(true);
-        setUserRole(user.role);
+
+        setUserRole(
+            user.role || ''
+        );
+
         setUserEmail(
             user.role === 'admin'
                 ? 'Admin'
-                : user.email
+                : user.email || ''
         );
 
         setUserInfo({
             name: user.name || '',
-            department: user.department || '',
+            department:
+                user.department || '',
             email: user.email || ''
         });
 
         if (user.role === 'admin') {
-            history.push('/admin/dashboard');
-        } else if (user.role === 'staff') {
-            history.push('/staff/dashboard');
+            history.push(
+                '/admin/dashboard'
+            );
+        } else if (
+            user.role === 'staff'
+        ) {
+            history.push(
+                '/staff/dashboard'
+            );
         } else {
             history.push('/');
         }
     };
 
+    // Toggle theme
     const toggleTheme = () => {
-        setTheme(current =>
+        setTheme((current) =>
             current === 'dark'
                 ? 'light'
                 : 'dark'
@@ -132,6 +180,7 @@ const App = () => {
     return (
         <Router>
             <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+
                 <Navbar
                     isLoggedIn={isLoggedIn}
                     onLogout={handleLogout}
@@ -139,13 +188,18 @@ const App = () => {
                     userEmail={userEmail}
                     userInfo={userInfo}
                     theme={theme}
-                    onToggleTheme={toggleTheme}
+                    onToggleTheme={
+                        toggleTheme
+                    }
                 />
 
                 <main className="min-h-[calc(100vh-72px)]">
+
                     <Switch>
 
-                        {/* Login */}
+                        {/* =========================
+                            LOGIN
+                        ========================== */}
                         <Route
                             path="/login/:role"
                             render={(props) =>
@@ -165,29 +219,40 @@ const App = () => {
                             }
                         />
 
-                        {/* Registration */}
+                        {/* =========================
+                            REGISTRATION
+                        ========================== */}
                         <Route
                             path="/register/:role"
                             render={(props) =>
                                 isLoggedIn ? (
                                     <Redirect to="/" />
                                 ) : (
-                                    <Register {...props} />
+                                    <Register
+                                        {...props}
+                                    />
                                 )
                             }
                         />
 
-                        {/* New Complaint */}
-                        <Route path="/complaints/new">
+                        {/* =========================
+                            NEW COMPLAINT
+                        ========================== */}
+                        <Route
+                            path="/complaints/new"
+                        >
                             {isLoggedIn &&
-                            userRole === 'student' ? (
+                            userRole ===
+                                'student' ? (
                                 <ComplaintForm />
                             ) : (
                                 <Redirect
                                     to={
-                                        userRole === 'admin'
+                                        userRole ===
+                                        'admin'
                                             ? '/admin/dashboard'
-                                            : userRole === 'staff'
+                                            : userRole ===
+                                              'staff'
                                             ? '/staff/dashboard'
                                             : '/login/student'
                                     }
@@ -195,17 +260,24 @@ const App = () => {
                             )}
                         </Route>
 
-                        {/* Student Complaints */}
-                        <Route path="/my-complaints">
+                        {/* =========================
+                            MY COMPLAINTS
+                        ========================== */}
+                        <Route
+                            path="/my-complaints"
+                        >
                             {isLoggedIn &&
-                            userRole === 'student' ? (
+                            userRole ===
+                                'student' ? (
                                 <MyComplaints />
                             ) : (
                                 <Redirect
                                     to={
-                                        userRole === 'admin'
+                                        userRole ===
+                                        'admin'
                                             ? '/admin/dashboard'
-                                            : userRole === 'staff'
+                                            : userRole ===
+                                              'staff'
                                             ? '/staff/dashboard'
                                             : '/login/student'
                                     }
@@ -213,17 +285,24 @@ const App = () => {
                             )}
                         </Route>
 
-                        {/* Complaint Details */}
-                        <Route path="/complaints/:id">
+                        {/* =========================
+                            COMPLAINT DETAILS
+                        ========================== */}
+                        <Route
+                            path="/complaints/:id"
+                        >
                             {isLoggedIn &&
-                            userRole === 'student' ? (
+                            userRole ===
+                                'student' ? (
                                 <ComplaintDetail />
                             ) : (
                                 <Redirect
                                     to={
-                                        userRole === 'admin'
+                                        userRole ===
+                                        'admin'
                                             ? '/admin/dashboard'
-                                            : userRole === 'staff'
+                                            : userRole ===
+                                              'staff'
                                             ? '/staff/dashboard'
                                             : '/login/student'
                                     }
@@ -231,38 +310,60 @@ const App = () => {
                             )}
                         </Route>
 
-                        {/* Admin Dashboard */}
-                        <Route path="/admin/dashboard">
+                        {/* =========================
+                            ADMIN DASHBOARD
+                        ========================== */}
+                        <Route
+                            path="/admin/dashboard"
+                        >
                             {isLoggedIn &&
-                            userRole === 'admin' ? (
+                            userRole ===
+                                'admin' ? (
                                 <AdminDashboard />
                             ) : (
                                 <Redirect to="/login/admin" />
                             )}
                         </Route>
 
-                        {/* Staff Dashboard */}
-                        <Route path="/staff/dashboard">
+                        {/* =========================
+                            STAFF / TECHNICIAN DASHBOARD
+                        ========================== */}
+                        <Route
+                            path="/staff/dashboard"
+                        >
                             {isLoggedIn &&
-                            userRole === 'staff' ? (
+                            userRole ===
+                                'staff' ? (
                                 <StaffDashboard />
                             ) : (
                                 <Redirect to="/login/staff" />
                             )}
                         </Route>
 
-                        {/* Home */}
-                        <Route path="/" exact>
+                        {/* =========================
+                            HOME
+                        ========================== */}
+                        <Route
+                            path="/"
+                            exact
+                        >
                             <Home
-                                userEmail={userEmail}
-                                userRole={userRole}
+                                userEmail={
+                                    userEmail
+                                }
+                                userRole={
+                                    userRole
+                                }
                             />
                         </Route>
 
-                        {/* Fallback */}
+                        {/* =========================
+                            FALLBACK
+                        ========================== */}
                         <Redirect to="/" />
 
                     </Switch>
+
                 </main>
             </div>
         </Router>

@@ -2,6 +2,56 @@ import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 
+const API_URL = 'https://campuscare-backend-jq45.onrender.com';
+
+const getImageUrl = (value) => {
+    if (!value || typeof value !== 'string') {
+        return '';
+    }
+
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+        return '';
+    }
+
+    if (
+        trimmed.startsWith('http://') ||
+        trimmed.startsWith('https://') ||
+        trimmed.startsWith('data:')
+    ) {
+        return trimmed;
+    }
+
+    if (trimmed.startsWith('//')) {
+        return `https:${trimmed}`;
+    }
+
+    return `${API_URL}${trimmed.startsWith('/') ? '' : '/'}${trimmed}`;
+};
+
+const getLatestStaffPhoto = (complaint) => {
+    const updates = Array.isArray(complaint?.staffUpdates)
+        ? complaint.staffUpdates
+        : [];
+
+    for (let i = updates.length - 1; i >= 0; i -= 1) {
+        const update = updates[i];
+
+        const photo =
+            update?.photoUrl ||
+            update?.imageUrl ||
+            update?.photo ||
+            update?.image;
+
+        if (photo) {
+            return getImageUrl(photo);
+        }
+    }
+
+    return '';
+};
+
 const MyComplaints = () => {
     const history = useHistory();
 
@@ -20,11 +70,10 @@ const MyComplaints = () => {
 
     const fetchComplaints = async () => {
         try {
-            const token =
-                localStorage.getItem('token');
+            const token = localStorage.getItem('token');
 
             const response = await axios.get(
-                '/api/complaints/my',
+                `${API_URL}/api/complaints/my`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -32,33 +81,27 @@ const MyComplaints = () => {
                 }
             );
 
-            const data = Array.isArray(
-                response.data
-            )
+            const data = Array.isArray(response.data)
                 ? response.data
                 : [];
 
             setComplaints(data);
         } catch (err) {
-            console.error(
-                'Fetch complaints error:',
-                err
-            );
+            console.error('Fetch complaints error:', err);
 
             setError(
                 err.response?.data?.message ||
-                'Failed to fetch your complaints.'
+                    'Failed to fetch your complaints.'
             );
         }
     };
 
     const fetchFeedbacks = async () => {
         try {
-            const token =
-                localStorage.getItem('token');
+            const token = localStorage.getItem('token');
 
             const response = await axios.get(
-                '/api/feedback',
+                `${API_URL}/api/feedback`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -72,20 +115,16 @@ const MyComplaints = () => {
                     : []
             );
         } catch (err) {
-            console.error(
-                'Fetch feedback error:',
-                err
-            );
+            console.error('Fetch feedback error:', err);
         }
     };
 
     const fetchProfile = async () => {
         try {
-            const token =
-                localStorage.getItem('token');
+            const token = localStorage.getItem('token');
 
             const response = await axios.get(
-                '/api/auth/profile',
+                `${API_URL}/api/auth/profile`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -95,10 +134,7 @@ const MyComplaints = () => {
 
             setUserInfo(response.data);
         } catch (err) {
-            console.error(
-                'Fetch profile error:',
-                err
-            );
+            console.error('Fetch profile error:', err);
         }
     };
 
@@ -118,11 +154,13 @@ const MyComplaints = () => {
     useEffect(() => {
         const load = async () => {
             setLoading(true);
+
             await Promise.all([
                 fetchComplaints(),
                 fetchFeedbacks(),
                 fetchProfile(),
             ]);
+
             setLoading(false);
         };
 
@@ -138,8 +176,7 @@ const MyComplaints = () => {
             ).length,
 
             inProgress: complaints.filter(
-                (c) =>
-                    c.status === 'in-progress'
+                (c) => c.status === 'in-progress'
             ).length,
 
             resolved: complaints.filter(
@@ -162,11 +199,8 @@ const MyComplaints = () => {
         }));
     };
 
-    const submitFeedback = async (
-        complaintId
-    ) => {
-        const current =
-            feedbackState[complaintId];
+    const submitFeedback = async (complaintId) => {
+        const current = feedbackState[complaintId];
 
         if (!current?.rating) {
             setError(
@@ -179,14 +213,11 @@ const MyComplaints = () => {
             setError('');
 
             await axios.post(
-                '/api/feedback',
+                `${API_URL}/api/feedback`,
                 {
                     complaintId,
-                    rating: Number(
-                        current.rating
-                    ),
-                    comment:
-                        current.comment || '',
+                    rating: Number(current.rating),
+                    comment: current.comment || '',
                 },
                 {
                     headers: {
@@ -214,7 +245,7 @@ const MyComplaints = () => {
 
             setError(
                 err.response?.data?.message ||
-                'Failed to submit feedback.'
+                    'Failed to submit feedback.'
             );
         }
     };
@@ -225,24 +256,20 @@ const MyComplaints = () => {
                 feedback.complaintId;
 
             return (
-                feedbackComplaint?._id ===
-                    complaintId ||
-                feedbackComplaint ===
-                    complaintId
+                feedbackComplaint?._id === complaintId ||
+                feedbackComplaint === complaintId
             );
         });
     };
 
     const filteredComplaints = useMemo(() => {
-        const search =
-            searchTerm.toLowerCase();
+        const search = searchTerm.toLowerCase().trim();
 
         return [...complaints]
             .filter((complaint) => {
                 const matchesFilter =
                     filter === 'all' ||
-                    complaint.status ===
-                        filter;
+                    complaint.status === filter;
 
                 const matchesSearch =
                     complaint.title
@@ -270,12 +297,8 @@ const MyComplaints = () => {
                 }
 
                 return (
-                    new Date(
-                        b.date || 0
-                    ) -
-                    new Date(
-                        a.date || 0
-                    )
+                    new Date(b.date || 0) -
+                    new Date(a.date || 0)
                 );
             });
     }, [
@@ -325,7 +348,6 @@ const MyComplaints = () => {
         <div className="min-h-[calc(100vh-72px)] bg-slate-50 px-4 py-10 dark:bg-slate-950 sm:px-6">
             <div className="mx-auto max-w-7xl">
 
-                {/* Header */}
                 <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
                     <div>
                         <p className="text-sm font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
@@ -378,84 +400,50 @@ const MyComplaints = () => {
                     </div>
                 )}
 
-                {/* Stats */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
                     <div className="modern-card p-5">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-slate-500">
-                                    Total
-                                </p>
+                        <p className="text-sm text-slate-500">
+                            Total
+                        </p>
 
-                                <p className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
-                                    {stats.total}
-                                </p>
-                            </div>
-
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-xl dark:bg-indigo-500/10">
-                                📋
-                            </div>
-                        </div>
+                        <p className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
+                            {stats.total}
+                        </p>
                     </div>
 
                     <div className="modern-card p-5">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-slate-500">
-                                    Pending
-                                </p>
+                        <p className="text-sm text-slate-500">
+                            Pending
+                        </p>
 
-                                <p className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
-                                    {stats.pending}
-                                </p>
-                            </div>
-
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-xl dark:bg-slate-800">
-                                🕐
-                            </div>
-                        </div>
+                        <p className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
+                            {stats.pending}
+                        </p>
                     </div>
 
                     <div className="modern-card p-5">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-slate-500">
-                                    In Progress
-                                </p>
+                        <p className="text-sm text-slate-500">
+                            In Progress
+                        </p>
 
-                                <p className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
-                                    {stats.inProgress}
-                                </p>
-                            </div>
-
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-xl dark:bg-amber-500/10">
-                                🛠️
-                            </div>
-                        </div>
+                        <p className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
+                            {stats.inProgress}
+                        </p>
                     </div>
 
                     <div className="modern-card p-5">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-slate-500">
-                                    Resolved
-                                </p>
+                        <p className="text-sm text-slate-500">
+                            Resolved
+                        </p>
 
-                                <p className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
-                                    {stats.resolved}
-                                </p>
-                            </div>
-
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-xl dark:bg-emerald-500/10">
-                                ✓
-                            </div>
-                        </div>
+                        <p className="mt-1 text-3xl font-black text-slate-900 dark:text-white">
+                            {stats.resolved}
+                        </p>
                     </div>
 
                 </div>
 
-                {/* Progress */}
                 {stats.total > 0 && (
                     <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
                         <div className="flex items-center justify-between">
@@ -465,8 +453,7 @@ const MyComplaints = () => {
                                 </h2>
 
                                 <p className="mt-1 text-sm text-slate-500">
-                                    {resolutionPercentage}% of
-                                    your complaints are resolved.
+                                    {resolutionPercentage}% of your complaints are resolved.
                                 </p>
                             </div>
 
@@ -486,7 +473,6 @@ const MyComplaints = () => {
                     </div>
                 )}
 
-                {/* Filters */}
                 <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
                     <div className="grid gap-4 md:grid-cols-3">
 
@@ -567,10 +553,9 @@ const MyComplaints = () => {
                     </div>
                 </div>
 
-                {/* Complaints */}
                 <div className="mt-6">
-                    {filteredComplaints.length ===
-                    0 ? (
+
+                    {filteredComplaints.length === 0 ? (
                         <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-700 dark:bg-slate-900">
                             <div className="text-5xl">
                                 📭
@@ -581,14 +566,12 @@ const MyComplaints = () => {
                             </h2>
 
                             <p className="mx-auto mt-2 max-w-md text-sm text-slate-500 dark:text-slate-400">
-                                {complaints.length ===
-                                0
+                                {complaints.length === 0
                                     ? "You haven't submitted a complaint yet."
                                     : 'Try changing your search or filters.'}
                             </p>
 
-                            {complaints.length ===
-                                0 && (
+                            {complaints.length === 0 && (
                                 <button
                                     type="button"
                                     onClick={() =>
@@ -604,241 +587,289 @@ const MyComplaints = () => {
                         </div>
                     ) : (
                         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+
                             {filteredComplaints.map(
-                                (complaint) => (
-                                    <div
-                                        key={
-                                            complaint._id
-                                        }
-                                        className="modern-card flex flex-col overflow-hidden"
-                                    >
-                                        {/* Card header */}
-                                        <div className="p-5">
-                                            <div className="flex items-start justify-between gap-3">
-                                                <h2 className="line-clamp-2 font-bold text-slate-900 dark:text-white">
-                                                    {
-                                                        complaint.title
-                                                    }
-                                                </h2>
+                                (complaint) => {
 
-                                                <span
-                                                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold capitalize ${getStatusStyle(
-                                                        complaint.status
-                                                    )}`}
-                                                >
-                                                    {(
-                                                        complaint.status ||
-                                                        'pending'
-                                                    ).replace(
-                                                        '-',
-                                                        ' '
-                                                    )}
-                                                </span>
-                                            </div>
+                                    const beforeImage =
+                                        getImageUrl(
+                                            complaint.imageUrl
+                                        );
 
-                                            <div className="mt-4 flex flex-wrap gap-2">
-                                                <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400">
-                                                    {
-                                                        complaint.category
-                                                    }
-                                                </span>
+                                    const afterImage =
+                                        getLatestStaffPhoto(
+                                            complaint
+                                        );
 
-                                                <span className="text-xs text-slate-400">
-                                                    {complaint.date
-                                                        ? new Date(
-                                                              complaint.date
-                                                          ).toLocaleDateString()
-                                                        : '—'}
-                                                </span>
-                                            </div>
-
-                                            <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                                                {
-                                                    complaint.description
-                                                }
-                                            </p>
-
-                                            {complaint.imageUrl && (
-                                                <img
-                                                    src={
-                                                        complaint.imageUrl
-                                                    }
-                                                    alt="Complaint"
-                                                    className="mt-4 h-36 w-full rounded-xl object-cover"
-                                                />
-                                            )}
-
-                                            {complaint.resolutionNotes && (
-                                                <div className="mt-4 rounded-xl bg-emerald-50 p-3 text-xs text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-                                                    <strong>
-                                                        Resolution:
-                                                    </strong>{' '}
-                                                    {
-                                                        complaint.resolutionNotes
-                                                    }
-                                                </div>
-                                            )}
-
-                                            {complaint.staffUpdates
-                                                ?.length >
-                                                0 && (
-                                                <p className="mt-4 text-xs font-medium text-slate-400">
-                                                    🕘{' '}
-                                                    {
-                                                        complaint
-                                                            .staffUpdates
-                                                            .length
-                                                    }{' '}
-                                                    staff update
-                                                    {complaint
-                                                        .staffUpdates
-                                                        .length >
-                                                    1
-                                                        ? 's'
-                                                        : ''}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        {/* Feedback */}
-                                        {complaint.status ===
-                                            'resolved' &&
-                                            !hasFeedback(
+                                    return (
+                                        <div
+                                            key={
                                                 complaint._id
-                                            ) &&
-                                            !feedbackState[
-                                                complaint
-                                                    ._id
-                                            ]?.submitted && (
-                                                <div className="border-t border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-800/50">
-                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                                                        ⭐ Rate the
-                                                        resolution
-                                                    </h3>
+                                            }
+                                            className="modern-card flex flex-col overflow-hidden"
+                                        >
+                                            <div className="p-5">
 
-                                                    <select
-                                                        value={
-                                                            feedbackState[
-                                                                complaint
-                                                                    ._id
-                                                            ]?.rating ||
-                                                            ''
+                                                <div className="flex items-start justify-between gap-3">
+
+                                                    <h2 className="line-clamp-2 font-bold text-slate-900 dark:text-white">
+                                                        {
+                                                            complaint.title
                                                         }
-                                                        onChange={(
-                                                            e
-                                                        ) =>
-                                                            handleFeedbackChange(
-                                                                complaint._id,
-                                                                'rating',
-                                                                e
-                                                                    .target
-                                                                    .value
-                                                            )
-                                                        }
-                                                        className="select-field mt-3"
+                                                    </h2>
+
+                                                    <span
+                                                        className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold capitalize ${getStatusStyle(
+                                                            complaint.status
+                                                        )}`}
                                                     >
-                                                        <option value="">
-                                                            Select rating
-                                                        </option>
-                                                        <option value="1">
-                                                            1 - Poor
-                                                        </option>
-                                                        <option value="2">
-                                                            2 - Fair
-                                                        </option>
-                                                        <option value="3">
-                                                            3 - Good
-                                                        </option>
-                                                        <option value="4">
-                                                            4 - Very Good
-                                                        </option>
-                                                        <option value="5">
-                                                            5 - Excellent
-                                                        </option>
-                                                    </select>
+                                                        {(
+                                                            complaint.status ||
+                                                            'pending'
+                                                        ).replace(
+                                                            '-',
+                                                            ' '
+                                                        )}
+                                                    </span>
 
-                                                    <textarea
-                                                        value={
-                                                            feedbackState[
-                                                                complaint
-                                                                    ._id
-                                                            ]?.comment ||
-                                                            ''
+                                                </div>
+
+                                                <div className="mt-4 flex flex-wrap gap-2">
+                                                    <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400">
+                                                        {
+                                                            complaint.category
                                                         }
-                                                        onChange={(
-                                                            e
-                                                        ) =>
-                                                            handleFeedbackChange(
-                                                                complaint._id,
-                                                                'comment',
+                                                    </span>
+
+                                                    <span className="text-xs text-slate-400">
+                                                        {complaint.date
+                                                            ? new Date(
+                                                                  complaint.date
+                                                              ).toLocaleDateString()
+                                                            : '—'}
+                                                    </span>
+                                                </div>
+
+                                                <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
+                                                    {
+                                                        complaint.description
+                                                    }
+                                                </p>
+
+                                                {(beforeImage ||
+                                                    afterImage) && (
+                                                    <div className="mt-5 grid grid-cols-2 gap-3">
+
+                                                        <div>
+                                                            <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                                                Before
+                                                            </p>
+
+                                                            {beforeImage ? (
+                                                                <img
+                                                                    src={
+                                                                        beforeImage
+                                                                    }
+                                                                    alt="Before complaint"
+                                                                    className="h-28 w-full rounded-xl border border-slate-200 object-cover dark:border-slate-700"
+                                                                />
+                                                            ) : (
+                                                                <div className="flex h-28 items-center justify-center rounded-xl bg-slate-100 text-xs text-slate-400 dark:bg-slate-800">
+                                                                    No image
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div>
+                                                            <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-emerald-600">
+                                                                After
+                                                            </p>
+
+                                                            {afterImage ? (
+                                                                <img
+                                                                    src={
+                                                                        afterImage
+                                                                    }
+                                                                    alt="After technician work"
+                                                                    className="h-28 w-full rounded-xl border border-emerald-200 object-cover dark:border-emerald-900"
+                                                                />
+                                                            ) : (
+                                                                <div className="flex h-28 items-center justify-center rounded-xl bg-slate-100 text-xs text-slate-400 dark:bg-slate-800">
+                                                                    Not available
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                    </div>
+                                                )}
+
+                                                {complaint.resolutionNotes && (
+                                                    <div className="mt-4 rounded-xl bg-emerald-50 p-3 text-xs text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                                        <strong>
+                                                            Resolution:
+                                                        </strong>{' '}
+                                                        {
+                                                            complaint.resolutionNotes
+                                                        }
+                                                    </div>
+                                                )}
+
+                                                {complaint.staffUpdates?.length > 0 && (
+                                                    <p className="mt-4 text-xs font-medium text-slate-400">
+                                                        🕘{' '}
+                                                        {
+                                                            complaint
+                                                                .staffUpdates
+                                                                .length
+                                                        }{' '}
+                                                        staff update
+                                                        {complaint
+                                                            .staffUpdates
+                                                            .length > 1
+                                                            ? 's'
+                                                            : ''}
+                                                    </p>
+                                                )}
+
+                                            </div>
+
+                                            {complaint.status ===
+                                                'resolved' &&
+                                                !hasFeedback(
+                                                    complaint._id
+                                                ) &&
+                                                !feedbackState[
+                                                    complaint._id
+                                                ]?.submitted && (
+                                                    <div className="border-t border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-800/50">
+
+                                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                                            ⭐ Rate the resolution
+                                                        </h3>
+
+                                                        <select
+                                                            value={
+                                                                feedbackState[
+                                                                    complaint
+                                                                        ._id
+                                                                ]?.rating ||
+                                                                ''
+                                                            }
+                                                            onChange={(
                                                                 e
-                                                                    .target
-                                                                    .value
-                                                            )
-                                                        }
-                                                        placeholder="Share your experience..."
-                                                        rows={3}
-                                                        className="input-field mt-3 resize-none"
-                                                    />
+                                                            ) =>
+                                                                handleFeedbackChange(
+                                                                    complaint._id,
+                                                                    'rating',
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            className="select-field mt-3"
+                                                        >
+                                                            <option value="">
+                                                                Select rating
+                                                            </option>
+                                                            <option value="1">
+                                                                1 - Poor
+                                                            </option>
+                                                            <option value="2">
+                                                                2 - Fair
+                                                            </option>
+                                                            <option value="3">
+                                                                3 - Good
+                                                            </option>
+                                                            <option value="4">
+                                                                4 - Very Good
+                                                            </option>
+                                                            <option value="5">
+                                                                5 - Excellent
+                                                            </option>
+                                                        </select>
 
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            submitFeedback(
-                                                                complaint._id
-                                                            )
-                                                        }
-                                                        className="mt-3 w-full rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700"
-                                                    >
-                                                        Submit Feedback
-                                                    </button>
+                                                        <textarea
+                                                            value={
+                                                                feedbackState[
+                                                                    complaint
+                                                                        ._id
+                                                                ]?.comment ||
+                                                                ''
+                                                            }
+                                                            onChange={(
+                                                                e
+                                                            ) =>
+                                                                handleFeedbackChange(
+                                                                    complaint._id,
+                                                                    'comment',
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            placeholder="Share your experience..."
+                                                            rows={3}
+                                                            className="input-field mt-3 resize-none"
+                                                        />
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                submitFeedback(
+                                                                    complaint._id
+                                                                )
+                                                            }
+                                                            className="mt-3 w-full rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700"
+                                                        >
+                                                            Submit Feedback
+                                                        </button>
+
+                                                    </div>
+                                                )}
+
+                                            {(hasFeedback(
+                                                complaint._id
+                                            ) ||
+                                                feedbackState[
+                                                    complaint._id
+                                                ]?.submitted) && (
+                                                <div className="border-t border-emerald-200 bg-emerald-50 px-5 py-3 text-xs font-semibold text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                                    ✓ Feedback submitted
                                                 </div>
                                             )}
 
-                                        {(hasFeedback(
-                                            complaint._id
-                                        ) ||
-                                            feedbackState[
-                                                complaint
-                                                    ._id
-                                            ]?.submitted) && (
-                                            <div className="border-t border-emerald-200 bg-emerald-50 px-5 py-3 text-xs font-semibold text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-500/10 dark:text-emerald-400">
-                                                ✓ Feedback submitted
+                                            <div className="mt-auto flex items-center justify-between border-t border-slate-200 p-4 dark:border-slate-800">
+
+                                                <span className="max-w-[55%] truncate text-xs text-slate-400">
+                                                    {complaint.assignedTo
+                                                        ? `Assigned: ${
+                                                              complaint
+                                                                  .assignedTo
+                                                                  .name ||
+                                                              complaint
+                                                                  .assignedTo
+                                                                  .email
+                                                          }`
+                                                        : 'Not assigned yet'}
+                                                </span>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        history.push(
+                                                            `/complaints/${complaint._id}`
+                                                        )
+                                                    }
+                                                    className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700"
+                                                >
+                                                    Track Complaint →
+                                                </button>
+
                                             </div>
-                                        )}
-
-                                        {/* Footer */}
-                                        <div className="mt-auto flex items-center justify-between border-t border-slate-200 p-4 dark:border-slate-800">
-                                            <span className="text-xs text-slate-400">
-                                                {complaint.assignedTo
-                                                    ? `Assigned: ${
-                                                          complaint
-                                                              .assignedTo
-                                                              .name ||
-                                                          complaint
-                                                              .assignedTo
-                                                              .email
-                                                      }`
-                                                    : 'Not assigned yet'}
-                                            </span>
-
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    history.push(
-                                                        `/complaints/${complaint._id}`
-                                                    )
-                                                }
-                                                className="text-sm font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
-                                            >
-                                                View Details →
-                                            </button>
                                         </div>
-                                    </div>
-                                )
+                                    );
+                                }
                             )}
+
                         </div>
                     )}
+
                 </div>
             </div>
         </div>

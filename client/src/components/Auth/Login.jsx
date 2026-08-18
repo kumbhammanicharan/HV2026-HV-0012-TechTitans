@@ -14,7 +14,10 @@ const Login = ({ setIsLoggedIn, onLoginSuccess }) => {
 
     // Keep role synchronized with /login/student, /login/staff, /login/admin
     useEffect(() => {
-        if (routeRole && ['student', 'staff', 'admin'].includes(routeRole)) {
+        if (
+            routeRole &&
+            ['student', 'staff', 'admin'].includes(routeRole)
+        ) {
             setRole(routeRole);
         }
     }, [routeRole]);
@@ -33,19 +36,24 @@ const Login = ({ setIsLoggedIn, onLoginSuccess }) => {
                 {
                     email: email.trim(),
                     password,
-                    role
+                    role,
                 }
             );
 
             const { token, user } = response.data;
 
             if (!token || !user) {
-                throw new Error('Invalid login response from server.');
+                throw new Error(
+                    'Invalid login response from server.'
+                );
             }
 
             // Save authentication data
             localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem(
+                'user',
+                JSON.stringify(user)
+            );
 
             // Update parent authentication state
             setIsLoggedIn(true);
@@ -63,7 +71,6 @@ const Login = ({ setIsLoggedIn, onLoginSuccess }) => {
             } else {
                 history.replace('/');
             }
-
         } catch (err) {
             console.error('Login error:', err);
 
@@ -125,7 +132,9 @@ const Login = ({ setIsLoggedIn, onLoginSuccess }) => {
                             <input
                                 type="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) =>
+                                    setEmail(e.target.value)
+                                }
                                 placeholder="Enter your email"
                                 autoComplete="email"
                                 required
@@ -142,7 +151,9 @@ const Login = ({ setIsLoggedIn, onLoginSuccess }) => {
                             <input
                                 type="password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) =>
+                                    setPassword(e.target.value)
+                                }
                                 placeholder="Enter your password"
                                 autoComplete="current-password"
                                 required
@@ -158,12 +169,20 @@ const Login = ({ setIsLoggedIn, onLoginSuccess }) => {
 
                             <select
                                 value={role}
-                                onChange={(e) => setRole(e.target.value)}
+                                onChange={(e) =>
+                                    setRole(e.target.value)
+                                }
                                 className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                             >
-                                <option value="student">Student</option>
-                                <option value="staff">Staff</option>
-                                <option value="admin">Administrator</option>
+                                <option value="student">
+                                    Student
+                                </option>
+                                <option value="staff">
+                                    Staff
+                                </option>
+                                <option value="admin">
+                                    Administrator
+                                </option>
                             </select>
                         </div>
 
@@ -173,7 +192,9 @@ const Login = ({ setIsLoggedIn, onLoginSuccess }) => {
                             disabled={loading}
                             className="w-full rounded-xl bg-indigo-600 px-4 py-3.5 font-semibold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                            {loading ? 'Signing in...' : 'Sign in'}
+                            {loading
+                                ? 'Signing in...'
+                                : 'Sign in'}
                         </button>
                     </form>
 
@@ -181,7 +202,11 @@ const Login = ({ setIsLoggedIn, onLoginSuccess }) => {
                     {role !== 'admin' && (
                         <button
                             type="button"
-                            onClick={() => history.push('/register/student')}
+                            onClick={() =>
+                                history.push(
+                                    '/register/student'
+                                )
+                            }
                             className="mt-5 w-full text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
                         >
                             Don't have an account? Create one

@@ -58,7 +58,7 @@ import {
 |--------------------------------------------------------------------------
 */
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://campuscare-backend-jq45.onrender.com/api';
 
 
 /*
@@ -366,6 +366,23 @@ const AdminDashboard = () => {
     const [expandedTechnician, setExpandedTechnician] =
         useState(null);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Technician search / filters
+    |--------------------------------------------------------------------------
+    */
+
+    const [technicianSearch, setTechnicianSearch] =
+        useState('');
+
+    const [technicianStatusFilter, setTechnicianStatusFilter] =
+        useState('all');
+
+    const [technicianDepartmentFilter, setTechnicianDepartmentFilter] =
+        useState('all');
+
+    const [technicianSort, setTechnicianSort] =
+        useState('performance');
 
     /*
     |--------------------------------------------------------------------------
@@ -419,15 +436,28 @@ const AdminDashboard = () => {
 
             const response =
                 await axios.get(
-                    `${API_URL}/auth/staff`,
+                    `${API_URL}/admin/staff`,
                     getAuthHeaders()
                 );
 
-            setStaff(
-                Array.isArray(response.data)
+            /*
+            |--------------------------------------------------------------------------
+            | Backend response format
+            |--------------------------------------------------------------------------
+            | GET /api/admin/staff returns:
+            | { success: true, count: ..., staff: [...] }
+            |
+            | Read the staff array from response.data.staff.
+            |--------------------------------------------------------------------------
+            */
+            const technicians =
+                Array.isArray(response.data?.staff)
+                    ? response.data.staff
+                    : Array.isArray(response.data)
                     ? response.data
-                    : []
-            );
+                    : [];
+
+            setStaff(technicians);
 
         } catch (err) {
 
@@ -1124,6 +1154,191 @@ const AdminDashboard = () => {
             staff,
             userSearch,
             userRoleFilter
+        ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Technician departments
+    |--------------------------------------------------------------------------
+    */
+
+    const technicianDepartments =
+        useMemo(() => {
+
+            return [
+                ...new Set(
+                    performance
+                        .map(
+                            (item) =>
+                                item.technician?.department
+                        )
+                        .filter(Boolean)
+                )
+            ].sort();
+
+        }, [performance]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Filtered / sorted technicians
+    |--------------------------------------------------------------------------
+    */
+
+    const filteredTechnicians =
+        useMemo(() => {
+
+            const search =
+                technicianSearch
+                    .toLowerCase()
+                    .trim();
+
+            const filtered =
+                performance.filter(
+                    (item) => {
+
+                        const technician =
+                            item.technician || {};
+
+                        const name =
+                            technician.name
+                                ?.toLowerCase() || '';
+
+                        const email =
+                            technician.email
+                                ?.toLowerCase() || '';
+
+                        const department =
+                            technician.department
+                                ?.toLowerCase() || '';
+
+                        const matchesSearch =
+                            !search ||
+                            name.includes(search) ||
+                            email.includes(search) ||
+                            department.includes(search);
+
+                        let matchesStatus = true;
+
+                        if (
+                            technicianStatusFilter ===
+                            'active'
+                        ) {
+                            matchesStatus =
+                                technician.isActive &&
+                                !technician.isBlocked;
+                        } else if (
+                            technicianStatusFilter ===
+                            'inactive'
+                        ) {
+                            matchesStatus =
+                                !technician.isActive &&
+                                !technician.isBlocked;
+                        } else if (
+                            technicianStatusFilter ===
+                            'blocked'
+                        ) {
+                            matchesStatus =
+                                Boolean(
+                                    technician.isBlocked
+                                );
+                        }
+
+                        const matchesDepartment =
+                            technicianDepartmentFilter ===
+                                'all' ||
+                            technician.department ===
+                                technicianDepartmentFilter;
+
+                        return (
+                            matchesSearch &&
+                            matchesStatus &&
+                            matchesDepartment
+                        );
+                    }
+                );
+
+            return [...filtered].sort(
+                (a, b) => {
+
+                    if (
+                        technicianSort ===
+                        'name'
+                    ) {
+                        return (
+                            (a.technician?.name || '')
+                                .localeCompare(
+                                    b.technician?.name || ''
+                                )
+                        );
+                    }
+
+                    if (
+                        technicianSort ===
+                        'rating'
+                    ) {
+                        return (
+                            Number(
+                                b.reviews?.averageRating ||
+                                    0
+                            ) -
+                            Number(
+                                a.reviews?.averageRating ||
+                                    0
+                            )
+                        );
+                    }
+
+                    if (
+                        technicianSort ===
+                        'resolution'
+                    ) {
+                        return (
+                            Number(
+                                b.resolutionPercentage ||
+                                    0
+                            ) -
+                            Number(
+                                a.resolutionPercentage ||
+                                    0
+                            )
+                        );
+                    }
+
+                    if (
+                        technicianSort ===
+                        'assigned'
+                    ) {
+                        return (
+                            Number(
+                                b.complaints?.total ||
+                                    0
+                            ) -
+                            Number(
+                                a.complaints?.total ||
+                                    0
+                            )
+                        );
+                    }
+
+                    return (
+                        Number(
+                            b.performanceScore || 0
+                        ) -
+                        Number(
+                            a.performanceScore || 0
+                        )
+                    );
+                }
+            );
+
+        }, [
+            performance,
+            technicianSearch,
+            technicianStatusFilter,
+            technicianDepartmentFilter,
+            technicianSort
         ]);
 
 
@@ -2165,24 +2380,264 @@ const AdminDashboard = () => {
 
                         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
 
-                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-col gap-4">
 
-                                <div>
+                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 
-                                    <h2 className="text-lg font-bold">
-                                        Technician Performance
-                                    </h2>
+                                    <div>
 
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                                        Monitor workload, resolution rate and student ratings
-                                    </p>
+                                        <h2 className="text-lg font-bold">
+                                            Technician Performance
+                                        </h2>
+
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                                            Monitor workload, resolution rate and student ratings
+                                        </p>
+
+                                    </div>
+
+                                    <div className="rounded-xl bg-blue-50 px-4 py-2 text-sm text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">
+                                        Showing {filteredTechnicians.length} of {performance.length}{' '}
+                                        technicians
+                                    </div>
 
                                 </div>
 
-                                <div className="rounded-xl bg-blue-50 px-4 py-2 text-sm text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">
-                                    {performance.length}{' '}
-                                    technicians
+                                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+
+                                    {/* Search */}
+
+                                    <div className="relative xl:col-span-1">
+
+                                        <Search
+                                            size={17}
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                                        />
+
+                                        <input
+                                            type="text"
+                                            value={
+                                                technicianSearch
+                                            }
+                                            onChange={(
+                                                e
+                                            ) =>
+                                                setTechnicianSearch(
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="Search technician..."
+                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-9 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 dark:border-slate-600 dark:bg-slate-900"
+                                        />
+
+                                        {technicianSearch && (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setTechnicianSearch(
+                                                        ''
+                                                    )
+                                                }
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+                                                title="Clear search"
+                                            >
+                                                <X
+                                                    size={15}
+                                                />
+                                            </button>
+                                        )}
+
+                                    </div>
+
+
+                                    {/* Status */}
+
+                                    <select
+                                        value={
+                                            technicianStatusFilter
+                                        }
+                                        onChange={(
+                                            e
+                                        ) =>
+                                            setTechnicianStatusFilter(
+                                                e.target.value
+                                            )
+                                        }
+                                        className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500 dark:border-slate-600 dark:bg-slate-900"
+                                    >
+
+                                        <option value="all">
+                                            All Status
+                                        </option>
+
+                                        <option value="active">
+                                            Active
+                                        </option>
+
+                                        <option value="inactive">
+                                            Inactive
+                                        </option>
+
+                                        <option value="blocked">
+                                            Blocked
+                                        </option>
+
+                                    </select>
+
+
+                                    {/* Department */}
+
+                                    <select
+                                        value={
+                                            technicianDepartmentFilter
+                                        }
+                                        onChange={(
+                                            e
+                                        ) =>
+                                            setTechnicianDepartmentFilter(
+                                                e.target.value
+                                            )
+                                        }
+                                        className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500 dark:border-slate-600 dark:bg-slate-900"
+                                    >
+
+                                        <option value="all">
+                                            All Departments
+                                        </option>
+
+                                        {technicianDepartments.map(
+                                            (
+                                                department
+                                            ) => (
+                                                <option
+                                                    key={
+                                                        department
+                                                    }
+                                                    value={
+                                                        department
+                                                    }
+                                                >
+                                                    {
+                                                        department
+                                                    }
+                                                </option>
+                                            )
+                                        )}
+
+                                    </select>
+
+
+                                    {/* Sort */}
+
+                                    <select
+                                        value={
+                                            technicianSort
+                                        }
+                                        onChange={(
+                                            e
+                                        ) =>
+                                            setTechnicianSort(
+                                                e.target.value
+                                            )
+                                        }
+                                        className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500 dark:border-slate-600 dark:bg-slate-900"
+                                    >
+
+                                        <option value="performance">
+                                            Sort: Performance
+                                        </option>
+
+                                        <option value="rating">
+                                            Sort: Rating
+                                        </option>
+
+                                        <option value="resolution">
+                                            Sort: Resolution Rate
+                                        </option>
+
+                                        <option value="assigned">
+                                            Sort: Assigned Complaints
+                                        </option>
+
+                                        <option value="name">
+                                            Sort: Name
+                                        </option>
+
+                                    </select>
+
                                 </div>
+
+
+                                {/* Active filter summary / reset */}
+
+                                {(technicianSearch ||
+                                    technicianStatusFilter !==
+                                        'all' ||
+                                    technicianDepartmentFilter !==
+                                        'all' ||
+                                    technicianSort !==
+                                        'performance') && (
+
+                                    <div className="flex flex-wrap items-center gap-2">
+
+                                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                                            Filters:
+                                        </span>
+
+                                        {technicianSearch && (
+                                            <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                                Search: "
+                                                {
+                                                    technicianSearch
+                                                }
+                                                "
+                                            </span>
+                                        )}
+
+                                        {technicianStatusFilter !==
+                                            'all' && (
+                                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-700 dark:text-slate-200">
+                                                Status: {
+                                                    technicianStatusFilter
+                                                }
+                                            </span>
+                                        )}
+
+                                        {technicianDepartmentFilter !==
+                                            'all' && (
+                                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-700 dark:text-slate-200">
+                                                Department: {
+                                                    technicianDepartmentFilter
+                                                }
+                                            </span>
+                                        )}
+
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setTechnicianSearch(
+                                                    ''
+                                                );
+                                                setTechnicianStatusFilter(
+                                                    'all'
+                                                );
+                                                setTechnicianDepartmentFilter(
+                                                    'all'
+                                                );
+                                                setTechnicianSort(
+                                                    'performance'
+                                                );
+                                            }}
+                                            className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+                                        >
+                                            <X
+                                                size={13}
+                                            />
+                                            Clear filters
+                                        </button>
+
+                                    </div>
+                                )}
 
                             </div>
 
@@ -2193,7 +2648,7 @@ const AdminDashboard = () => {
 
                         <div className="grid gap-5 lg:grid-cols-2">
 
-                            {performance.map(
+                            {filteredTechnicians.map(
                                 (
                                     item,
                                     index
@@ -2671,6 +3126,46 @@ const AdminDashboard = () => {
 
                                     );
                                 }
+                            )}
+
+                            {filteredTechnicians.length === 0 && (
+                                <div className="lg:col-span-2 rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-800">
+
+                                    <Search
+                                        size={40}
+                                        className="mx-auto mb-3 text-slate-400"
+                                    />
+
+                                    <h3 className="font-bold text-slate-700 dark:text-slate-200">
+                                        No technicians found
+                                    </h3>
+
+                                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                                        Try a different search term or change the filters.
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setTechnicianSearch(
+                                                ''
+                                            );
+                                            setTechnicianStatusFilter(
+                                                'all'
+                                            );
+                                            setTechnicianDepartmentFilter(
+                                                'all'
+                                            );
+                                            setTechnicianSort(
+                                                'performance'
+                                            );
+                                        }}
+                                        className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                                    >
+                                        Clear Filters
+                                    </button>
+
+                                </div>
                             )}
 
                         </div>
@@ -3339,7 +3834,7 @@ const AdminDashboard = () => {
                                                 'http'
                                             )
                                                 ? selectedComplaint.imageUrl
-                                                : `http://localhost:5000${selectedComplaint.imageUrl}`
+                                                : `https://campuscare-backend-jq45.onrender.com${selectedComplaint.imageUrl}`
                                         }
                                         alt="Complaint evidence"
                                         className="max-h-72 rounded-xl border object-contain"

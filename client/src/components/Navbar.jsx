@@ -66,7 +66,10 @@ const Navbar = ({
 
                     <div className="hidden sm:block">
                         <div className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
-                            Campus<span className="text-indigo-600 dark:text-indigo-400">Care</span>
+                            Campus
+                            <span className="text-indigo-600 dark:text-indigo-400">
+                                Care
+                            </span>
                         </div>
 
                         <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-500">
@@ -138,6 +141,7 @@ const Navbar = ({
                             Dashboard
                         </Link>
                     )}
+
                 </nav>
 
                 {/* Right Controls */}
@@ -150,7 +154,9 @@ const Navbar = ({
                         aria-label="Toggle theme"
                         className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-lg transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800"
                     >
-                        {theme === 'dark' ? '☀️' : '🌙'}
+                        {theme === 'dark'
+                            ? '☀️'
+                            : '🌙'}
                     </button>
 
                     {isLoggedIn ? (
@@ -172,6 +178,7 @@ const Navbar = ({
                                         {currentRole}
                                     </div>
                                 </div>
+
                             </div>
 
                             <button
@@ -187,7 +194,9 @@ const Navbar = ({
                             <button
                                 type="button"
                                 onClick={() =>
-                                    navigate('/login/student')
+                                    navigate(
+                                        '/login/student'
+                                    )
                                 }
                                 className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                             >
@@ -197,7 +206,9 @@ const Navbar = ({
                             <button
                                 type="button"
                                 onClick={() =>
-                                    navigate('/register/student')
+                                    navigate(
+                                        '/register/student'
+                                    )
                                 }
                                 className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-700"
                             >
@@ -205,6 +216,7 @@ const Navbar = ({
                             </button>
                         </>
                     )}
+
                 </div>
 
                 {/* Mobile Controls */}
@@ -215,7 +227,9 @@ const Navbar = ({
                         onClick={onToggleTheme}
                         className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900"
                     >
-                        {theme === 'dark' ? '☀️' : '🌙'}
+                        {theme === 'dark'
+                            ? '☀️'
+                            : '🌙'}
                     </button>
 
                     <button
@@ -230,6 +244,7 @@ const Navbar = ({
                     >
                         {mobileOpen ? '×' : '☰'}
                     </button>
+
                 </div>
             </div>
 
@@ -336,10 +351,12 @@ const Navbar = ({
                                 Logout
                             </button>
                         )}
+
                     </div>
 
                     {isLoggedIn && (
                         <div className="mt-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-900">
+
                             <div className="text-sm font-bold text-slate-900 dark:text-white">
                                 {userInfo?.name ||
                                     currentRole}
@@ -354,10 +371,13 @@ const Navbar = ({
                                     {userInfo.department}
                                 </div>
                             )}
+
                         </div>
                     )}
+
                 </div>
             )}
+
         </header>
     );
 };

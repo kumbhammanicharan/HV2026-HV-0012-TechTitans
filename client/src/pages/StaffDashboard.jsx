@@ -1,5 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+    useEffect,
+    useMemo,
+    useState
+} from 'react';
 import axios from 'axios';
+
+const API_URL =
+    'https://campuscare-backend-jq45.onrender.com';
 
 const statusStyles = {
     pending:
@@ -12,89 +19,156 @@ const statusStyles = {
         'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
 };
 
+const getImageUrl = (value) => {
+    if (!value || typeof value !== 'string') {
+        return '';
+    }
+
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+        return '';
+    }
+
+    if (
+        trimmed.startsWith('http://') ||
+        trimmed.startsWith('https://') ||
+        trimmed.startsWith('data:')
+    ) {
+        return trimmed;
+    }
+
+    if (trimmed.startsWith('//')) {
+        return `https:${trimmed}`;
+    }
+
+    return `${API_URL}${trimmed.startsWith('/') ? '' : '/'}${trimmed}`;
+};
+
+const getUpdatePhoto = (update) => {
+    return getImageUrl(
+        update?.photoUrl ||
+            update?.imageUrl ||
+            update?.photo ||
+            update?.image
+    );
+};
+
 const StaffDashboard = () => {
-    const [complaints, setComplaints] = useState([]);
-    const [selectedComplaint, setSelectedComplaint] = useState(null);
+    const [complaints, setComplaints] =
+        useState([]);
 
-    const [remarks, setRemarks] = useState('');
-    const [resolutionNotes, setResolutionNotes] = useState('');
-    const [status, setStatus] = useState('in-progress');
-    const [photo, setPhoto] = useState(null);
+    const [
+        selectedComplaint,
+        setSelectedComplaint
+    ] = useState(null);
 
-    const [filter, setFilter] = useState('all');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [sortBy, setSortBy] = useState('date');
+    const [remarks, setRemarks] =
+        useState('');
 
-    const [stats, setStats] = useState({
-        total: 0,
-        pending: 0,
-        inProgress: 0,
-        resolved: 0
-    });
+    const [
+        resolutionNotes,
+        setResolutionNotes
+    ] = useState('');
 
-    const [userInfo, setUserInfo] = useState(null);
+    const [status, setStatus] =
+        useState('in-progress');
 
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    const [photo, setPhoto] =
+        useState(null);
 
-    const token = localStorage.getItem('token');
+    const [photoPreview, setPhotoPreview] =
+        useState('');
+
+    const [filter, setFilter] =
+        useState('all');
+
+    const [searchTerm, setSearchTerm] =
+        useState('');
+
+    const [sortBy, setSortBy] =
+        useState('date');
+
+    const [stats, setStats] =
+        useState({
+            total: 0,
+            pending: 0,
+            inProgress: 0,
+            resolved: 0
+        });
+
+    const [userInfo, setUserInfo] =
+        useState(null);
+
+    const [loading, setLoading] =
+        useState(true);
+
+    const [saving, setSaving] =
+        useState(false);
+
+    const [error, setError] =
+        useState('');
+
+    const [success, setSuccess] =
+        useState('');
+
+    const token =
+        localStorage.getItem('token');
 
     const authHeaders = {
         Authorization: `Bearer ${token}`
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Fetch assigned complaints
-    |--------------------------------------------------------------------------
-    */
-    const fetchAssignedComplaints = async () => {
-        try {
-            const response = await axios.get(
-                '/api/complaints/assigned',
-                {
-                    headers: authHeaders
-                }
-            );
+    const fetchAssignedComplaints =
+        async () => {
+            try {
+                const response =
+                    await axios.get(
+                        `${API_URL}/api/complaints/assigned`,
+                        {
+                            headers:
+                                authHeaders
+                        }
+                    );
 
-            const data = Array.isArray(response.data)
-                ? response.data
-                : [];
+                const data =
+                    Array.isArray(
+                        response.data
+                    )
+                        ? response.data
+                        : [];
 
-            setComplaints(data);
-            calculateStats(data);
+                setComplaints(data);
+                calculateStats(data);
 
-        } catch (err) {
-            console.error(
-                'Assigned complaints error:',
-                err
-            );
+            } catch (err) {
+                console.error(
+                    'Assigned complaints error:',
+                    err
+                );
 
-            setError(
-                err.response?.data?.message ||
-                'Failed to fetch assigned complaints.'
-            );
-        }
-    };
+                setError(
+                    err.response?.data
+                        ?.message ||
+                        'Failed to fetch assigned complaints.'
+                );
+            }
+        };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Fetch profile
-    |--------------------------------------------------------------------------
-    */
     const fetchProfile = async () => {
         try {
-            const response = await axios.get(
-                '/api/auth/profile',
-                {
-                    headers: authHeaders
-                }
+            const response =
+                await axios.get(
+                    `${API_URL}/api/auth/profile`,
+                    {
+                        headers:
+                            authHeaders
+                    }
+                );
+
+            setUserInfo(
+                response.data
             );
-
-            setUserInfo(response.data);
-
         } catch (err) {
             console.error(
                 'Profile error:',
@@ -103,34 +177,34 @@ const StaffDashboard = () => {
         }
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Statistics
-    |--------------------------------------------------------------------------
-    */
-    const calculateStats = (data) => {
+    const calculateStats = (
+        data
+    ) => {
         setStats({
             total: data.length,
 
             pending: data.filter(
-                c => c.status === 'pending'
+                (c) =>
+                    c.status ===
+                    'pending'
             ).length,
 
-            inProgress: data.filter(
-                c => c.status === 'in-progress'
-            ).length,
+            inProgress:
+                data.filter(
+                    (c) =>
+                        c.status ===
+                        'in-progress'
+                ).length,
 
-            resolved: data.filter(
-                c => c.status === 'resolved'
-            ).length
+            resolved:
+                data.filter(
+                    (c) =>
+                        c.status ===
+                        'resolved'
+                ).length
         });
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Initial load
-    |--------------------------------------------------------------------------
-    */
     useEffect(() => {
         const load = async () => {
             setLoading(true);
@@ -147,64 +221,115 @@ const StaffDashboard = () => {
         load();
     }, []);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Refresh
-    |--------------------------------------------------------------------------
-    */
-    const refreshDashboard = async () => {
-        setError('');
-        setSuccess('');
-
-        await fetchAssignedComplaints();
-
-        setSuccess(
-            'Dashboard refreshed successfully.'
-        );
-
-        setTimeout(() => {
+    const refreshDashboard =
+        async () => {
+            setError('');
             setSuccess('');
-        }, 2500);
+
+            await fetchAssignedComplaints();
+
+            setSuccess(
+                'Dashboard refreshed successfully.'
+            );
+
+            setTimeout(() => {
+                setSuccess('');
+            }, 2500);
+        };
+
+    const clearPhoto = () => {
+        setPhoto(null);
+        setPhotoPreview('');
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Select complaint
-    |--------------------------------------------------------------------------
-    */
-    const handleSelect = (complaint) => {
-        setSelectedComplaint(complaint);
+    const handlePhotoChange = (
+        e
+    ) => {
+        const file =
+            e.target.files?.[0] ||
+            null;
+
+        setError('');
+
+        if (!file) {
+            clearPhoto();
+            return;
+        }
+
+        if (
+            !file.type.startsWith(
+                'image/'
+            )
+        ) {
+            setError(
+                'Please select a valid image file.'
+            );
+
+            e.target.value = '';
+            clearPhoto();
+            return;
+        }
+
+        if (
+            file.size >
+            5 * 1024 * 1024
+        ) {
+            setError(
+                'Progress photo must be less than 5 MB.'
+            );
+
+            e.target.value = '';
+            clearPhoto();
+            return;
+        }
+
+        setPhoto(file);
+
+        setPhotoPreview(
+            URL.createObjectURL(file)
+        );
+    };
+
+    const handleSelect = (
+        complaint
+    ) => {
+        setSelectedComplaint(
+            complaint
+        );
 
         setRemarks('');
 
         setResolutionNotes(
-            complaint.resolutionNotes || ''
+            complaint.resolutionNotes ||
+                ''
         );
 
         setStatus(
-            complaint.status === 'pending'
+            complaint.status ===
+                'pending'
                 ? 'in-progress'
                 : complaint.status
         );
 
-        setPhoto(null);
+        clearPhoto();
 
         setError('');
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Submit staff update
-    |--------------------------------------------------------------------------
-    */
-    const handleUpdate = async (e) => {
+    const handleUpdate = async (
+        e
+    ) => {
         e.preventDefault();
 
         if (!selectedComplaint) {
             return;
         }
 
-        if (!remarks.trim() && !photo && !resolutionNotes.trim()) {
+        if (
+            !remarks.trim() &&
+            !photo &&
+            !resolutionNotes.trim()
+        ) {
             setError(
                 'Please add remarks, a photo, or resolution notes.'
             );
@@ -216,7 +341,8 @@ const StaffDashboard = () => {
             setError('');
             setSuccess('');
 
-            const formData = new FormData();
+            const formData =
+                new FormData();
 
             formData.append(
                 'remarks',
@@ -240,25 +366,29 @@ const StaffDashboard = () => {
                 );
             }
 
-            const response = await axios.post(
-                `/api/complaints/${selectedComplaint._id}/staff-update`,
-                formData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
+            const response =
+                await axios.post(
+                    `${API_URL}/api/complaints/${selectedComplaint._id}/staff-update`,
+                    formData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
                     }
-                }
-            );
+                );
 
             console.log(
                 'Staff update response:',
                 response.data
             );
 
-            setSelectedComplaint(null);
+            setSelectedComplaint(
+                null
+            );
+
             setRemarks('');
             setResolutionNotes('');
-            setPhoto(null);
+            clearPhoto();
 
             setSuccess(
                 'Complaint updated successfully.'
@@ -274,89 +404,122 @@ const StaffDashboard = () => {
 
             setError(
                 err.response?.data?.message ||
-                'Failed to update complaint.'
+                    'Failed to update complaint.'
             );
         } finally {
             setSaving(false);
         }
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | Filter + search + sort
-    |--------------------------------------------------------------------------
-    */
-    const filteredComplaints = useMemo(() => {
-        const search = searchTerm
-            .trim()
-            .toLowerCase();
-
-        return complaints
-            .filter(complaint => {
-                const matchesFilter =
-                    filter === 'all' ||
-                    complaint.status === filter;
-
-                const searchableText = [
-                    complaint.title,
-                    complaint.category,
-                    complaint.description,
-                    complaint.raisedBy?.name,
-                    complaint.raisedBy?.email
-                ]
-                    .filter(Boolean)
-                    .join(' ')
+    const filteredComplaints =
+        useMemo(() => {
+            const search =
+                searchTerm
+                    .trim()
                     .toLowerCase();
 
-                const matchesSearch =
-                    !search ||
-                    searchableText.includes(search);
+            return complaints
+                .filter(
+                    (complaint) => {
+                        const matchesFilter =
+                            filter ===
+                                'all' ||
+                            complaint.status ===
+                                filter;
 
-                return (
-                    matchesFilter &&
-                    matchesSearch
+                        const searchableText =
+                            [
+                                complaint.title,
+                                complaint.category,
+                                complaint.description,
+                                complaint
+                                    .raisedBy
+                                    ?.name,
+                                complaint
+                                    .raisedBy
+                                    ?.email
+                            ]
+                                .filter(
+                                    Boolean
+                                )
+                                .join(
+                                    ' '
+                                )
+                                .toLowerCase();
+
+                        const matchesSearch =
+                            !search ||
+                            searchableText.includes(
+                                search
+                            );
+
+                        return (
+                            matchesFilter &&
+                            matchesSearch
+                        );
+                    }
+                )
+                .sort(
+                    (a, b) => {
+                        if (
+                            sortBy ===
+                            'title'
+                        ) {
+                            return (
+                                a.title ||
+                                ''
+                            ).localeCompare(
+                                b.title ||
+                                    ''
+                            );
+                        }
+
+                        if (
+                            sortBy ===
+                            'priority'
+                        ) {
+                            return (
+                                Number(
+                                    a.dueInDays ||
+                                        3
+                                ) -
+                                Number(
+                                    b.dueInDays ||
+                                        3
+                                )
+                            );
+                        }
+
+                        return (
+                            new Date(
+                                b.date ||
+                                    0
+                            ) -
+                            new Date(
+                                a.date ||
+                                    0
+                            )
+                        );
+                    }
                 );
-            })
-            .sort((a, b) => {
-                if (sortBy === 'title') {
-                    return a.title.localeCompare(
-                        b.title
-                    );
-                }
+        }, [
+            complaints,
+            filter,
+            searchTerm,
+            sortBy
+        ]);
 
-                if (sortBy === 'priority') {
-                    return (
-                        Number(a.dueInDays || 3) -
-                        Number(b.dueInDays || 3)
-                    );
-                }
-
-                return (
-                    new Date(b.date) -
-                    new Date(a.date)
-                );
-            });
-    }, [
-        complaints,
-        filter,
-        searchTerm,
-        sortBy
-    ]);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Loading
-    |--------------------------------------------------------------------------
-    */
     if (loading) {
         return (
             <div className="flex min-h-[70vh] items-center justify-center bg-slate-50 dark:bg-slate-950">
                 <div className="text-center">
+
                     <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600" />
 
                     <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
                         Loading technician dashboard...
                     </p>
+
                 </div>
             </div>
         );
@@ -367,10 +530,10 @@ const StaffDashboard = () => {
 
             <div className="mx-auto max-w-7xl">
 
-                {/* Header */}
                 <div className="mb-8 flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
 
                     <div>
+
                         <p className="text-sm font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                             Technician Workspace
                         </p>
@@ -383,22 +546,30 @@ const StaffDashboard = () => {
                             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                                 Welcome back,{' '}
                                 <strong className="text-slate-700 dark:text-slate-200">
-                                    {userInfo.name}
+                                    {
+                                        userInfo.name
+                                    }
                                 </strong>
 
                                 {userInfo.department && (
                                     <>
-                                        {' '}•{' '}
-                                        {userInfo.department}
+                                        {' '}
+                                        •{' '}
+                                        {
+                                            userInfo.department
+                                        }
                                     </>
                                 )}
                             </p>
                         )}
+
                     </div>
 
                     <button
                         type="button"
-                        onClick={refreshDashboard}
+                        onClick={
+                            refreshDashboard
+                        }
                         className="secondary-button"
                     >
                         ↻ Refresh
@@ -406,7 +577,6 @@ const StaffDashboard = () => {
 
                 </div>
 
-                {/* Alerts */}
                 {error && (
                     <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
                         ⚠️ {error}
@@ -419,7 +589,6 @@ const StaffDashboard = () => {
                     </div>
                 )}
 
-                {/* Statistics */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
                     <div className="modern-card p-5">
@@ -468,7 +637,6 @@ const StaffDashboard = () => {
 
                 </div>
 
-                {/* Filters */}
                 <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
 
                     <div className="grid gap-4 md:grid-cols-3">
@@ -480,7 +648,7 @@ const StaffDashboard = () => {
 
                             <select
                                 value={filter}
-                                onChange={e =>
+                                onChange={(e) =>
                                     setFilter(
                                         e.target.value
                                     )
@@ -512,7 +680,7 @@ const StaffDashboard = () => {
 
                             <select
                                 value={sortBy}
-                                onChange={e =>
+                                onChange={(e) =>
                                     setSortBy(
                                         e.target.value
                                     )
@@ -540,8 +708,10 @@ const StaffDashboard = () => {
 
                             <input
                                 type="text"
-                                value={searchTerm}
-                                onChange={e =>
+                                value={
+                                    searchTerm
+                                }
+                                onChange={(e) =>
                                     setSearchTerm(
                                         e.target.value
                                     )
@@ -554,10 +724,10 @@ const StaffDashboard = () => {
                     </div>
                 </div>
 
-                {/* Complaint list */}
                 <div className="mt-6">
 
-                    {filteredComplaints.length === 0 ? (
+                    {filteredComplaints.length ===
+                    0 ? (
                         <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center dark:border-slate-700 dark:bg-slate-900">
 
                             <div className="text-5xl">
@@ -577,134 +747,208 @@ const StaffDashboard = () => {
                         <div className="grid gap-5 lg:grid-cols-2">
 
                             {filteredComplaints.map(
-                                complaint => (
-                                    <div
-                                        key={complaint._id}
-                                        className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
-                                    >
+                                (
+                                    complaint
+                                ) => {
 
-                                        <div className="p-6">
+                                    const beforeImage =
+                                        getImageUrl(
+                                            complaint.imageUrl
+                                        );
 
-                                            <div className="flex items-start justify-between gap-4">
+                                    const updates =
+                                        Array.isArray(
+                                            complaint.staffUpdates
+                                        )
+                                            ? complaint.staffUpdates
+                                            : [];
 
-                                                <div className="min-w-0">
+                                    const latestAfter =
+                                        [...updates]
+                                            .reverse()
+                                            .map(
+                                                getUpdatePhoto
+                                            )
+                                            .find(
+                                                Boolean
+                                            );
 
-                                                    <span className={`rounded-full px-3 py-1 text-xs font-bold capitalize ${statusStyles[complaint.status] || statusStyles.pending}`}>
-                                                        {(
-                                                            complaint.status ||
-                                                            'pending'
-                                                        ).replace(
-                                                            '-',
-                                                            ' '
-                                                        )}
+                                    return (
+                                        <div
+                                            key={
+                                                complaint._id
+                                            }
+                                            className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
+                                        >
+
+                                            <div className="p-6">
+
+                                                <div className="flex items-start justify-between gap-4">
+
+                                                    <div className="min-w-0">
+
+                                                        <span
+                                                            className={`rounded-full px-3 py-1 text-xs font-bold capitalize ${
+                                                                statusStyles[
+                                                                    complaint.status
+                                                                ] ||
+                                                                statusStyles.pending
+                                                            }`}
+                                                        >
+                                                            {(
+                                                                complaint.status ||
+                                                                'pending'
+                                                            ).replace(
+                                                                '-',
+                                                                ' '
+                                                            )}
+                                                        </span>
+
+                                                        <h2 className="mt-3 text-xl font-black text-slate-900 dark:text-white">
+                                                            {
+                                                                complaint.title
+                                                            }
+                                                        </h2>
+
+                                                    </div>
+
+                                                    <span className="shrink-0 rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400">
+                                                        {
+                                                            complaint.category
+                                                        }
                                                     </span>
 
-                                                    <h2 className="mt-3 text-xl font-black text-slate-900 dark:text-white">
-                                                        {
-                                                            complaint.title
-                                                        }
-                                                    </h2>
-
                                                 </div>
 
-                                                <span className="shrink-0 rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400">
+                                                <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
                                                     {
-                                                        complaint.category
+                                                        complaint.description
                                                     }
-                                                </span>
+                                                </p>
 
-                                            </div>
+                                                <div className="mt-5 grid gap-2 text-xs text-slate-500 dark:text-slate-400">
 
-                                            <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
-                                                {
-                                                    complaint.description
-                                                }
-                                            </p>
-
-                                            <div className="mt-5 grid gap-2 text-xs text-slate-500 dark:text-slate-400">
-
-                                                <p>
-                                                    👤{' '}
-                                                    <strong>
-                                                        Raised by:
-                                                    </strong>{' '}
-                                                    {complaint
-                                                        .raisedBy
-                                                        ?.name ||
-                                                        complaint
+                                                    <p>
+                                                        👤{' '}
+                                                        <strong>
+                                                            Raised by:
+                                                        </strong>{' '}
+                                                        {complaint
                                                             .raisedBy
-                                                            ?.email ||
-                                                        'Unknown'}
-                                                </p>
-
-                                                <p>
-                                                    📅{' '}
-                                                    <strong>
-                                                        Submitted:
-                                                    </strong>{' '}
-                                                    {complaint.date
-                                                        ? new Date(
-                                                              complaint.date
-                                                          ).toLocaleString()
-                                                        : '—'}
-                                                </p>
-
-                                                <p>
-                                                    ⏱️{' '}
-                                                    <strong>
-                                                        Due:
-                                                    </strong>{' '}
-                                                    {complaint.dueInDays}{' '}
-                                                    day(s)
-                                                </p>
-
-                                            </div>
-
-                                            {complaint.imageUrl && (
-                                                <img
-                                                    src={
-                                                        complaint.imageUrl
-                                                    }
-                                                    alt="Complaint evidence"
-                                                    className="mt-5 h-48 w-full rounded-2xl object-cover"
-                                                />
-                                            )}
-
-                                            {complaint.staffUpdates?.length > 0 && (
-                                                <div className="mt-5 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50">
-
-                                                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                                                        Progress
+                                                            ?.name ||
+                                                            complaint
+                                                                .raisedBy
+                                                                ?.email ||
+                                                            'Unknown'}
                                                     </p>
 
-                                                    <p className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                                    <p>
+                                                        📅{' '}
+                                                        <strong>
+                                                            Submitted:
+                                                        </strong>{' '}
+                                                        {complaint.date
+                                                            ? new Date(
+                                                                  complaint.date
+                                                              ).toLocaleString()
+                                                            : '—'}
+                                                    </p>
+
+                                                    <p>
+                                                        ⏱️{' '}
+                                                        <strong>
+                                                            Due:
+                                                        </strong>{' '}
                                                         {
-                                                            complaint
-                                                                .staffUpdates
-                                                                .length
+                                                            complaint.dueInDays
                                                         }{' '}
-                                                        update(s)
+                                                        day(s)
                                                     </p>
 
                                                 </div>
-                                            )}
 
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    handleSelect(
-                                                        complaint
-                                                    )
-                                                }
-                                                className="primary-button mt-5 w-full"
-                                            >
-                                                🛠️ Update Complaint
-                                            </button>
+                                                {(beforeImage ||
+                                                    latestAfter) && (
+                                                    <div className="mt-5 grid grid-cols-2 gap-3">
+
+                                                        <div>
+                                                            <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                                                Before
+                                                            </p>
+
+                                                            {beforeImage ? (
+                                                                <img
+                                                                    src={
+                                                                        beforeImage
+                                                                    }
+                                                                    alt="Complaint evidence"
+                                                                    className="h-36 w-full rounded-xl object-cover"
+                                                                />
+                                                            ) : (
+                                                                <div className="flex h-36 items-center justify-center rounded-xl bg-slate-100 text-xs text-slate-400 dark:bg-slate-800">
+                                                                    No image
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div>
+                                                            <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-emerald-600">
+                                                                After
+                                                            </p>
+
+                                                            {latestAfter ? (
+                                                                <img
+                                                                    src={
+                                                                        latestAfter
+                                                                    }
+                                                                    alt="Technician progress"
+                                                                    className="h-36 w-full rounded-xl object-cover"
+                                                                />
+                                                            ) : (
+                                                                <div className="flex h-36 items-center justify-center rounded-xl bg-slate-100 text-xs text-slate-400 dark:bg-slate-800">
+                                                                    Not uploaded
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                    </div>
+                                                )}
+
+                                                {updates.length >
+                                                    0 && (
+                                                    <div className="mt-5 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50">
+
+                                                        <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                                            Progress
+                                                        </p>
+
+                                                        <p className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                                            {
+                                                                updates.length
+                                                            }{' '}
+                                                            update(s)
+                                                        </p>
+
+                                                    </div>
+                                                )}
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleSelect(
+                                                            complaint
+                                                        )
+                                                    }
+                                                    className="primary-button mt-5 w-full"
+                                                >
+                                                    🛠️ Update Complaint
+                                                </button>
+
+                                            </div>
 
                                         </div>
-
-                                    </div>
-                                )
+                                    );
+                                }
                             )}
 
                         </div>
@@ -714,11 +958,10 @@ const StaffDashboard = () => {
 
             </div>
 
-            {/* Update Modal */}
             {selectedComplaint && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
 
-                    <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white shadow-2xl dark:bg-slate-900">
+                    <div className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white shadow-2xl dark:bg-slate-900">
 
                         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-5 dark:border-slate-800 dark:bg-slate-900">
 
@@ -749,7 +992,9 @@ const StaffDashboard = () => {
                         </div>
 
                         <form
-                            onSubmit={handleUpdate}
+                            onSubmit={
+                                handleUpdate
+                            }
                             className="p-6"
                         >
 
@@ -789,7 +1034,9 @@ const StaffDashboard = () => {
                                             <strong>
                                                 Status:
                                             </strong>{' '}
-                                            {selectedComplaint.status}
+                                            {
+                                                selectedComplaint.status
+                                            }
                                         </p>
 
                                         <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
@@ -804,16 +1051,72 @@ const StaffDashboard = () => {
                                         <div className="mt-5">
 
                                             <p className="mb-2 text-sm font-bold text-slate-900 dark:text-white">
-                                                Evidence
+                                                Before / Student Evidence
                                             </p>
 
                                             <img
-                                                src={
+                                                src={getImageUrl(
                                                     selectedComplaint.imageUrl
-                                                }
+                                                )}
                                                 alt="Complaint evidence"
-                                                className="max-h-64 w-full rounded-2xl object-cover"
+                                                className="max-h-64 w-full rounded-2xl object-contain bg-slate-100 dark:bg-slate-800"
                                             />
+
+                                        </div>
+                                    )}
+
+                                    {selectedComplaint.staffUpdates?.length >
+                                        0 && (
+                                        <div className="mt-5">
+
+                                            <p className="mb-3 text-sm font-bold text-slate-900 dark:text-white">
+                                                Previous Technician Photos
+                                            </p>
+
+                                            <div className="grid grid-cols-2 gap-3">
+
+                                                {selectedComplaint.staffUpdates
+                                                    .map(
+                                                        (
+                                                            update,
+                                                            index
+                                                        ) => {
+                                                            const updateImage =
+                                                                getUpdatePhoto(
+                                                                    update
+                                                                );
+
+                                                            if (
+                                                                !updateImage
+                                                            ) {
+                                                                return null;
+                                                            }
+
+                                                            return (
+                                                                <div
+                                                                    key={
+                                                                        index
+                                                                    }
+                                                                >
+                                                                    <img
+                                                                        src={
+                                                                            updateImage
+                                                                        }
+                                                                        alt="Technician update"
+                                                                        className="h-36 w-full rounded-xl object-cover"
+                                                                    />
+
+                                                                    <p className="mt-1 text-[10px] text-slate-400">
+                                                                        Update{' '}
+                                                                        {index +
+                                                                            1}
+                                                                    </p>
+                                                                </div>
+                                                            );
+                                                        }
+                                                    )}
+
+                                            </div>
 
                                         </div>
                                     )}
@@ -827,8 +1130,10 @@ const StaffDashboard = () => {
                                     </label>
 
                                     <select
-                                        value={status}
-                                        onChange={e =>
+                                        value={
+                                            status
+                                        }
+                                        onChange={(e) =>
                                             setStatus(
                                                 e.target.value
                                             )
@@ -853,8 +1158,12 @@ const StaffDashboard = () => {
                                     </label>
 
                                     <textarea
-                                        value={remarks}
-                                        onChange={e =>
+                                        value={
+                                            remarks
+                                        }
+                                        onChange={(
+                                            e
+                                        ) =>
                                             setRemarks(
                                                 e.target.value
                                             )
@@ -872,7 +1181,9 @@ const StaffDashboard = () => {
                                         value={
                                             resolutionNotes
                                         }
-                                        onChange={e =>
+                                        onChange={(
+                                            e
+                                        ) =>
                                             setResolutionNotes(
                                                 e.target.value
                                             )
@@ -883,27 +1194,80 @@ const StaffDashboard = () => {
                                     />
 
                                     <label className="mb-2 mt-5 block text-sm font-bold text-slate-900 dark:text-white">
-                                        Progress Photo
+                                        After / Progress Photo
                                     </label>
 
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={e =>
-                                            setPhoto(
-                                                e.target.files?.[0] ||
-                                                null
-                                            )
-                                        }
-                                        className="input-field"
-                                    />
+                                    {!photoPreview ? (
+                                        <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center transition hover:border-indigo-400 hover:bg-indigo-50/50 dark:border-slate-700 dark:bg-slate-800/50">
+
+                                            <div className="text-3xl">
+                                                📷
+                                            </div>
+
+                                            <p className="mt-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+                                                Upload work/progress photo
+                                            </p>
+
+                                            <p className="mt-1 text-xs text-slate-400">
+                                                PNG, JPG or JPEG • Max 5 MB
+                                            </p>
+
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={
+                                                    handlePhotoChange
+                                                }
+                                                className="hidden"
+                                            />
+
+                                        </label>
+                                    ) : (
+                                        <div className="overflow-hidden rounded-2xl border border-emerald-200 dark:border-emerald-900">
+
+                                            <img
+                                                src={
+                                                    photoPreview
+                                                }
+                                                alt="Technician photo preview"
+                                                className="max-h-72 w-full object-contain bg-slate-100 dark:bg-slate-800"
+                                            />
+
+                                            <div className="flex items-center justify-between bg-white px-4 py-3 dark:bg-slate-900">
+
+                                                <div>
+                                                    <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                                                        After Photo
+                                                    </p>
+
+                                                    <p className="text-xs text-slate-400">
+                                                        {
+                                                            photo?.name
+                                                        }
+                                                    </p>
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={
+                                                        clearPhoto
+                                                    }
+                                                    className="text-sm font-bold text-red-600 hover:text-red-700"
+                                                >
+                                                    Remove
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+                                    )}
 
                                 </div>
 
                             </div>
 
-                            {/* Previous updates */}
-                            {selectedComplaint.staffUpdates?.length > 0 && (
+                            {selectedComplaint.staffUpdates?.length >
+                                0 && (
                                 <div className="mt-8">
 
                                     <h3 className="font-bold text-slate-900 dark:text-white">
@@ -940,13 +1304,15 @@ const StaffDashboard = () => {
                                                         </p>
                                                     )}
 
-                                                    {update.photoUrl && (
+                                                    {getUpdatePhoto(
+                                                        update
+                                                    ) && (
                                                         <img
-                                                            src={
-                                                                update.photoUrl
-                                                            }
-                                                            alt="Progress"
-                                                            className="mt-3 h-32 w-full rounded-xl object-cover"
+                                                            src={getUpdatePhoto(
+                                                                update
+                                                            )}
+                                                            alt="Technician progress"
+                                                            className="mt-3 h-40 w-full rounded-xl object-cover"
                                                         />
                                                     )}
 
@@ -969,7 +1335,9 @@ const StaffDashboard = () => {
                                         )
                                     }
                                     className="secondary-button"
-                                    disabled={saving}
+                                    disabled={
+                                        saving
+                                    }
                                 >
                                     Cancel
                                 </button>
@@ -977,7 +1345,9 @@ const StaffDashboard = () => {
                                 <button
                                     type="submit"
                                     className="primary-button"
-                                    disabled={saving}
+                                    disabled={
+                                        saving
+                                    }
                                 >
                                     {saving
                                         ? 'Saving...'
