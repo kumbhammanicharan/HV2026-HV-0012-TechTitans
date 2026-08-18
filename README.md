@@ -9,18 +9,9 @@ HACKVERSE 2026 — Smart Campus Complaint, Maintenance & Service Request Trackin
 <img width="1919" height="877" alt="image" src="https://github.com/user-attachments/assets/35bc9b6a-7851-475a-b217-450c409f6409" />
 <img width="1919" height="881" alt="image" src="https://github.com/user-attachments/assets/809be07a-bffa-4e75-abf5-1608e3e35498" />
 <img width="1914" height="891" alt="image" src="https://github.com/user-attachments/assets/1fe686be-b4e3-4378-82de-59a1c2ce5945" />
-👨‍💻 Team
-Team: TechTitans
-Hackathon: HACKVERSE 2026
-Team ID: HV2026-0012
-👥 Team Members
-Team ID: HV-0012
-Team Name: TechTitans
-Member	Name
-Member 1	Khubham Manicharan
-Member 2	Chelpuri Chandramshu
-Member 3	Goyal Rajender
-Member 4	Doneti Manjunath
+<img width="609" height="356" alt="image" src="https://github.com/user-attachments/assets/08b83606-220e-4e3e-8052-e650bef08b86" />
+
+ 
 ---
 📌 Project Overview
 The Smart Campus Complaint, Maintenance & Service Request Tracking System is a role-based full-stack web application that digitizes the campus complaint and maintenance process.
