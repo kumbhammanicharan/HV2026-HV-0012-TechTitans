@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logo from '../assets/logo.png';
 import {
     Link,
     useHistory,
@@ -99,8 +100,12 @@ const Navbar = ({
                     className="group flex items-center gap-3"
                 >
 
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-lg font-black text-white shadow-lg shadow-indigo-600/25 transition-transform group-hover:scale-105">
-                        C
+                    <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-lg shadow-indigo-600/15 ring-1 ring-slate-200 transition-transform group-hover:scale-105 dark:border dark:border-slate-700 dark:bg-slate-900">
+                        <img
+                            src={logo}
+                            alt="CampusCare Logo"
+                            className="h-full w-full object-contain p-1"
+                        />
                     </div>
 
                     <div className="hidden sm:block">
