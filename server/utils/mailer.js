@@ -1,24 +1,51 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config({ path: '../.env' });  
+const path = require('path');
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // TLS
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+// Always load the .env file from the server folder
+require('dotenv').config({
+    path: path.resolve(__dirname, '../.env'),
 });
 
-function sendResolutionEmail(to, subject, text) {
-  const mailOptions = {
-    from: process.env.EMAIL_USER, // admin email from .env
-    to, // resolved user's email
-    subject,
-    text
-  };
-  return transporter.sendMail(mailOptions);
+const emailUser = process.env.EMAIL_USER;
+const emailPass = (process.env.EMAIL_PASS || '').replace(/\s+/g, '');
+
+if (!emailUser || !emailPass) {
+    console.warn(
+        '⚠️ EMAIL_USER or EMAIL_PASS is missing. Email notifications are disabled.'
+    );
 }
 
-module.exports = { sendResolutionEmail }; 
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+        user: emailUser,
+        pass: emailPass,
+    },
+});
+
+async function sendResolutionEmail(to, subject, text) {
+    if (!emailUser || !emailPass) {
+        throw new Error(
+            'Email is not configured. Add EMAIL_USER and EMAIL_PASS to server/.env.'
+        );
+    }
+
+    if (!to) {
+        throw new Error(
+            'Recipient email address is required.'
+        );
+    }
+
+    return transporter.sendMail({
+        from: `"CampusCare" <${emailUser}>`,
+        to,
+        subject,
+        text,
+    });
+}
+
+module.exports = {
+    sendResolutionEmail,
+};
