@@ -106,35 +106,88 @@ const Home = ({ userEmail, userRole }) => {
     return (
         <div className="overflow-hidden">
 
-            {/* HERO */}
-            <section className="relative isolate bg-slate-950 text-white">
+            {/* =====================================================
+                HERO
+            ===================================================== */}
 
-                <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_rgba(99,102,241,0.30),_transparent_40%),radial-gradient(circle_at_bottom_left,_rgba(124,58,237,0.20),_transparent_40%)]" />
+            <section className="relative isolate overflow-hidden bg-slate-950 text-white">
+                <div className="cc-hero-aurora left-[-18%] top-[-22%] -z-20" />
+                <div className="cc-hero-aurora right-[-22%] bottom-[-30%] -z-20 opacity-70" style={{ animationDelay: '-6s' }} />
+                <div className="cc-hero-grid -z-20" />
+                <div className="cc-scan-layer -z-10" />
 
+                {/* Main background */}
+                <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_top_right,_rgba(99,102,241,0.30),_transparent_40%),radial-gradient(circle_at_bottom_left,_rgba(124,58,237,0.20),_transparent_40%)]" />
+
+                {/* Moving gradient orbs */}
+                <div className="campus-orb absolute -right-32 top-10 -z-10 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl" />
+
+                <div
+                    className="campus-orb-slow absolute -left-32 bottom-0 -z-10 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl"
+                />
+
+                <div className="campus-glow absolute left-1/2 top-1/3 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-indigo-500/10 blur-3xl" />
+
+                {/* Animated particles */}
+                <span
+                    className="campus-particle absolute left-[12%] top-[28%] h-1.5 w-1.5 rounded-full bg-indigo-300"
+                />
+
+                <span
+                    className="campus-particle absolute left-[25%] top-[65%] h-2 w-2 rounded-full bg-violet-300 [animation-delay:1.2s]"
+                />
+
+                <span
+                    className="campus-particle absolute right-[25%] top-[20%] h-1.5 w-1.5 rounded-full bg-indigo-200 [animation-delay:2s]"
+                />
+
+                <span
+                    className="campus-particle absolute right-[10%] bottom-[25%] h-2 w-2 rounded-full bg-violet-300 [animation-delay:3s]"
+                />
+
+                {/* Hero grid */}
                 <div className="mx-auto grid min-h-[650px] max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8">
 
-                    <div>
-                        <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-300">
-                            ✦ Smart Campus Resolution Platform
+                    {/* =================================================
+                        LEFT CONTENT
+                    ================================================= */}
+
+                    <div className="campus-hero-content">
+
+                        {/* Badge */}
+                        <div className="campus-hero-content campus-hero-delay-1 mb-7 inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-300">
+                            <span className="campus-pulse">
+                                ✦
+                            </span>
+
+                            Smart Campus Resolution Platform
                         </div>
 
-                        <h1 className="text-5xl font-black leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+                        {/* Heading */}
+                        <h1 className="campus-hero-content campus-hero-delay-2 cc-hero-text-glow text-5xl font-black leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+
                             Report issues.
+
                             <br />
-                            <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+
+                            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-indigo-300 bg-clip-text text-transparent">
                                 Get them resolved.
                             </span>
+
                         </h1>
 
-                        <p className="mt-7 max-w-xl text-lg leading-8 text-slate-300">
+                        {/* Description */}
+                        <p className="campus-hero-content campus-hero-delay-3 mt-7 max-w-xl text-lg leading-8 text-slate-300">
                             CampusCare connects students,
                             technicians and administrators through
                             one transparent complaint management
                             platform.
                         </p>
 
+                        {/* Buttons */}
                         {!userEmail ? (
-                            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                            <div className="campus-hero-content campus-hero-delay-3 mt-9 flex flex-col gap-3 sm:flex-row">
+
                                 <button
                                     type="button"
                                     onClick={() =>
@@ -142,7 +195,7 @@ const Home = ({ userEmail, userRole }) => {
                                             '/login/student'
                                         )
                                     }
-                                    className="rounded-xl bg-indigo-600 px-6 py-3.5 font-bold text-white shadow-xl shadow-indigo-600/20 transition hover:-translate-y-0.5 hover:bg-indigo-500"
+                                    className="rounded-xl bg-indigo-600 px-6 py-3.5 font-bold text-white shadow-xl shadow-indigo-600/20 transition duration-300 hover:-translate-y-1 hover:bg-indigo-500 hover:shadow-indigo-500/30"
                                 >
                                     Get Started →
                                 </button>
@@ -154,13 +207,15 @@ const Home = ({ userEmail, userRole }) => {
                                             '/register/student'
                                         )
                                     }
-                                    className="rounded-xl border border-slate-700 bg-slate-900/50 px-6 py-3.5 font-bold text-white transition hover:bg-slate-800"
+                                    className="rounded-xl border border-slate-700 bg-slate-900/50 px-6 py-3.5 font-bold text-white transition duration-300 hover:-translate-y-1 hover:border-indigo-400/40 hover:bg-slate-800"
                                 >
                                     Create Account
                                 </button>
+
                             </div>
                         ) : (
-                            <div className="mt-9 rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-5">
+                            <div className="campus-hero-content campus-hero-delay-3 mt-9 rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-5 backdrop-blur">
+
                                 <p className="text-sm text-emerald-300">
                                     Welcome back
                                 </p>
@@ -172,108 +227,190 @@ const Home = ({ userEmail, userRole }) => {
                                 <p className="mt-1 text-sm capitalize text-slate-400">
                                     {userRole} account
                                 </p>
+
                             </div>
                         )}
 
-                        <div className="mt-10 flex flex-wrap gap-6 text-sm text-slate-400">
-                            <span>✓ Easy reporting</span>
-                            <span>✓ Real-time tracking</span>
-                            <span>✓ Transparent workflow</span>
+                        {/* Trust points */}
+                        <div className="campus-hero-content campus-hero-delay-3 mt-10 flex flex-wrap gap-6 text-sm text-slate-400">
+
+                            <span className="transition hover:text-white">
+                                ✓ Easy reporting
+                            </span>
+
+                            <span className="transition hover:text-white">
+                                ✓ Real-time tracking
+                            </span>
+
+                            <span className="transition hover:text-white">
+                                ✓ Transparent workflow
+                            </span>
+
                         </div>
+
                     </div>
 
-                    {/* Hero visual */}
+                    {/* =================================================
+                        HERO VISUAL
+                    ================================================= */}
+
                     <div className="relative hidden lg:block">
-                        <div className="absolute -inset-10 rounded-full bg-indigo-600/10 blur-3xl" />
 
-                        <div className="relative mx-auto max-w-md rounded-[2rem] border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur-xl">
+                        {/* Outer glow */}
+                        <div className="campus-glow absolute -inset-10 rounded-full bg-indigo-600/10 blur-3xl" />
 
-                            <div className="rounded-2xl bg-slate-900 p-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-xs text-slate-500">
-                                            Complaint Status
-                                        </p>
+                        {/* Orbiting decoration */}
+                        <div className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full border border-indigo-400/10">
 
-                                        <p className="mt-1 text-lg font-bold">
-                                            Live Tracking
-                                        </p>
-                                    </div>
+                            <div className="campus-orbit absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-400 shadow-lg shadow-indigo-400/50" />
 
-                                    <div className="rounded-xl bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-400">
-                                        ACTIVE
-                                    </div>
-                                </div>
+                        </div>
 
-                                <div className="mt-8 space-y-4">
+                        {/* Floating dashboard */}
+                        <div className="campus-dashboard-float cc-dashboard-premium relative mx-auto max-w-md">
+                            <div className="cc-dashboard-ring" />
+                            <div className="cc-floating-mini-card absolute -left-20 top-12 hidden rounded-2xl border border-white/10 bg-slate-900/90 px-4 py-3 shadow-2xl backdrop-blur-xl xl:block">
+                                <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">✓</span><div><p className="text-[10px] uppercase tracking-wider text-slate-500">Resolved</p><p className="text-sm font-bold text-white">Issue closed</p></div></div>
+                            </div>
+                            <div className="cc-floating-mini-card cc-floating-mini-card-delay absolute -right-20 bottom-20 hidden rounded-2xl border border-white/10 bg-slate-900/90 px-4 py-3 shadow-2xl backdrop-blur-xl xl:block">
+                                <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-300">↗</span><div><p className="text-[10px] uppercase tracking-wider text-slate-500">Live data</p><p className="text-sm font-bold text-white">Tracking active</p></div></div>
+                            </div>
 
-                                    <div className="flex items-center gap-4 rounded-xl bg-slate-800 p-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10">
-                                            📝
-                                        </div>
+                            {/* Glass shell */}
+                            <div className="campus-shimmer relative rounded-[2rem] border border-white/10 bg-white/5 p-5 shadow-2xl shadow-indigo-950/40 backdrop-blur-xl">
 
-                                        <div className="flex-1">
-                                            <p className="text-sm font-bold">
-                                                Complaint submitted
-                                            </p>
+                                <div className="rounded-2xl bg-slate-900 p-6">
 
-                                            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-700">
-                                                <div className="h-full w-full rounded-full bg-indigo-500" />
-                                            </div>
-                                        </div>
-
-                                        <span className="text-xs text-emerald-400">
-                                            ✓
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center gap-4 rounded-xl bg-slate-800 p-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10">
-                                            🛠️
-                                        </div>
-
-                                        <div className="flex-1">
-                                            <p className="text-sm font-bold">
-                                                Assigned to technician
-                                            </p>
-
-                                            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-700">
-                                                <div className="h-full w-2/3 rounded-full bg-violet-500" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-4 rounded-xl bg-slate-800 p-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10">
-                                            ✓
-                                        </div>
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between">
 
                                         <div>
-                                            <p className="text-sm font-bold">
-                                                Resolution
+                                            <p className="text-xs text-slate-500">
+                                                Complaint Status
                                             </p>
 
-                                            <p className="mt-1 text-xs text-slate-500">
-                                                Track every step
+                                            <p className="mt-1 text-lg font-bold">
+                                                Live Tracking
                                             </p>
                                         </div>
+
+                                        <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-400">
+
+                                            <span className="relative flex h-2 w-2">
+
+                                                <span className="campus-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+
+                                                <span className="cc-live-dot relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+
+                                            </span>
+
+                                            ACTIVE
+
+                                        </div>
+
+                                    </div>
+
+                                    {/* Tracking steps */}
+                                    <div className="mt-8 space-y-4">
+
+                                        {/* Submitted */}
+                                        <div className="campus-motion-card flex items-center gap-4 rounded-xl bg-slate-800 p-4">
+
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10">
+                                                📝
+                                            </div>
+
+                                            <div className="flex-1">
+
+                                                <p className="text-sm font-bold">
+                                                    Complaint submitted
+                                                </p>
+
+                                                <div className="cc-data-line mt-2 h-1.5 overflow-hidden rounded-full bg-slate-700">
+
+                                                    <div className="campus-progress h-full w-full rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400" />
+
+                                                </div>
+
+                                            </div>
+
+                                            <span className="text-xs text-emerald-400">
+                                                ✓
+                                            </span>
+
+                                        </div>
+
+                                        {/* Assigned */}
+                                        <div className="campus-motion-card flex items-center gap-4 rounded-xl bg-slate-800 p-4">
+
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10">
+                                                🛠️
+                                            </div>
+
+                                            <div className="flex-1">
+
+                                                <p className="text-sm font-bold">
+                                                    Assigned to technician
+                                                </p>
+
+                                                <div className="cc-data-line mt-2 h-1.5 overflow-hidden rounded-full bg-slate-700">
+
+                                                    <div className="campus-progress campus-progress-delay h-full w-2/3 rounded-full bg-gradient-to-r from-violet-500 to-indigo-400" />
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        {/* Resolution */}
+                                        <div className="campus-motion-card flex items-center gap-4 rounded-xl bg-slate-800 p-4">
+
+                                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10">
+                                                ✓
+                                            </div>
+
+                                            <div>
+
+                                                <p className="text-sm font-bold">
+                                                    Resolution
+                                                </p>
+
+                                                <p className="mt-1 text-xs text-slate-500">
+                                                    Track every step
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
                                     </div>
 
                                 </div>
+
                             </div>
+
                         </div>
+
                     </div>
 
                 </div>
+
             </section>
 
-            {/* QUICK ACTIONS */}
+            {/* =====================================================
+                QUICK ACTIONS
+            ===================================================== */}
+
             {userEmail && (
                 <section className="border-b border-slate-200 bg-white py-8 dark:border-slate-800 dark:bg-slate-900">
+
                     <div className="page-container">
+
                         <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
 
                             <div>
+
                                 <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
                                     Quick actions
                                 </p>
@@ -281,6 +418,7 @@ const Home = ({ userEmail, userRole }) => {
                                 <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
                                     What would you like to do?
                                 </h2>
+
                             </div>
 
                             <div className="flex flex-wrap gap-3">
@@ -342,16 +480,24 @@ const Home = ({ userEmail, userRole }) => {
                                 )}
 
                             </div>
+
                         </div>
+
                     </div>
+
                 </section>
             )}
 
-            {/* FEATURES */}
+            {/* =====================================================
+                FEATURES
+            ===================================================== */}
+
             <section className="bg-slate-50 py-20 dark:bg-slate-950">
+
                 <div className="page-container">
 
                     <div className="mx-auto max-w-2xl text-center">
+
                         <div className="mb-4 text-sm font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
                             Why CampusCare?
                         </div>
@@ -364,12 +510,14 @@ const Home = ({ userEmail, userRole }) => {
                             Designed around transparency, accountability
                             and a simple user experience.
                         </p>
+
                     </div>
 
                     <div className="mt-12 grid gap-6 md:grid-cols-3">
 
-                        <div className="modern-card p-7">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-2xl dark:bg-amber-500/10">
+                        <div className="campus-motion-card modern-card p-7">
+
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-2xl transition duration-300 hover:rotate-6 dark:bg-amber-500/10">
                                 ⚡
                             </div>
 
@@ -382,10 +530,12 @@ const Home = ({ userEmail, userRole }) => {
                                 to the right people and reduce unnecessary
                                 delays.
                             </p>
+
                         </div>
 
-                        <div className="modern-card p-7">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-2xl dark:bg-emerald-500/10">
+                        <div className="campus-motion-card modern-card p-7">
+
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-2xl transition duration-300 hover:rotate-6 dark:bg-emerald-500/10">
                                 🔒
                             </div>
 
@@ -397,10 +547,12 @@ const Home = ({ userEmail, userRole }) => {
                                 Follow complaints from submission through
                                 assignment, progress updates and resolution.
                             </p>
+
                         </div>
 
-                        <div className="modern-card p-7">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-2xl dark:bg-indigo-500/10">
+                        <div className="campus-motion-card modern-card p-7">
+
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-100 text-2xl transition duration-300 hover:rotate-6 dark:bg-indigo-500/10">
                                 📱
                             </div>
 
@@ -412,17 +564,25 @@ const Home = ({ userEmail, userRole }) => {
                                 A responsive interface that works smoothly
                                 across desktops, tablets and mobile devices.
                             </p>
+
                         </div>
 
                     </div>
+
                 </div>
+
             </section>
 
-            {/* STATISTICS */}
+            {/* =====================================================
+                STATISTICS
+            ===================================================== */}
+
             <section className="border-y border-slate-200 bg-white py-20 dark:border-slate-800 dark:bg-slate-900">
+
                 <div className="page-container">
 
                     <div className="text-center">
+
                         <div className="mb-4 text-sm font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
                             Platform Overview
                         </div>
@@ -430,11 +590,13 @@ const Home = ({ userEmail, userRole }) => {
                         <h2 className="section-title">
                             CampusCare in numbers
                         </h2>
+
                     </div>
 
                     <div className="mt-12 grid gap-5 sm:grid-cols-3">
 
-                        <div className="rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-600 p-7 text-white shadow-xl shadow-indigo-600/20">
+                        <div className="campus-stat-motion rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-600 p-7 text-white shadow-xl shadow-indigo-600/20">
+
                             <div className="text-3xl">
                                 ✓
                             </div>
@@ -448,9 +610,11 @@ const Home = ({ userEmail, userRole }) => {
                             <p className="mt-2 text-indigo-100">
                                 Complaints Resolved
                             </p>
+
                         </div>
 
-                        <div className="rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 p-7 text-white shadow-xl shadow-emerald-500/20">
+                        <div className="campus-stat-motion rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 p-7 text-white shadow-xl shadow-emerald-500/20">
+
                             <div className="text-3xl">
                                 👥
                             </div>
@@ -464,9 +628,11 @@ const Home = ({ userEmail, userRole }) => {
                             <p className="mt-2 text-emerald-100">
                                 Registered Users
                             </p>
+
                         </div>
 
-                        <div className="rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 p-7 text-white shadow-xl shadow-amber-500/20">
+                        <div className="campus-stat-motion rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 p-7 text-white shadow-xl shadow-amber-500/20">
+
                             <div className="text-3xl">
                                 ⏱️
                             </div>
@@ -480,20 +646,28 @@ const Home = ({ userEmail, userRole }) => {
                             <p className="mt-2 text-amber-100">
                                 Average Response Time
                             </p>
+
                         </div>
 
                     </div>
+
                 </div>
+
             </section>
 
-            {/* REVIEWS */}
+            {/* =====================================================
+                REVIEWS
+            ===================================================== */}
+
             <section
                 id="feedback"
                 className="bg-slate-50 py-20 dark:bg-slate-950"
             >
+
                 <div className="page-container">
 
                     <div className="mx-auto max-w-2xl text-center">
+
                         <div className="mb-4 text-sm font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
                             Community Feedback
                         </div>
@@ -505,6 +679,7 @@ const Home = ({ userEmail, userRole }) => {
                         <p className="section-subtitle mx-auto">
                             Feedback from people using the platform.
                         </p>
+
                     </div>
 
                     <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -514,8 +689,9 @@ const Home = ({ userEmail, userRole }) => {
                                 (feedback) => (
                                     <div
                                         key={feedback._id}
-                                        className="modern-card p-6"
+                                        className="campus-motion-card modern-card p-6"
                                     >
+
                                         <div className="flex items-center gap-4">
 
                                             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 font-bold text-white">
@@ -530,6 +706,7 @@ const Home = ({ userEmail, userRole }) => {
                                             </div>
 
                                             <div className="min-w-0">
+
                                                 <h3 className="truncate font-bold text-slate-900 dark:text-white">
                                                     {feedback
                                                         .userId
@@ -540,11 +717,13 @@ const Home = ({ userEmail, userRole }) => {
                                                 <p className="truncate text-xs text-slate-500 dark:text-slate-400">
                                                     CampusCare User
                                                 </p>
+
                                             </div>
 
                                         </div>
 
                                         <div className="mt-5">
+
                                             <span className="text-amber-400">
                                                 {'★'.repeat(
                                                     Math.max(
@@ -571,6 +750,7 @@ const Home = ({ userEmail, userRole }) => {
                                                         )
                                                 )}
                                             </span>
+
                                         </div>
 
                                         <p className="mt-4 leading-7 text-slate-600 dark:text-slate-400">
@@ -587,11 +767,13 @@ const Home = ({ userEmail, userRole }) => {
                                                 ).toLocaleDateString()}
                                             </p>
                                         )}
+
                                     </div>
                                 )
                             )
                         ) : (
                             <div className="col-span-full rounded-3xl border border-dashed border-slate-300 p-10 text-center dark:border-slate-700">
+
                                 <div className="text-4xl">
                                     💬
                                 </div>
@@ -604,18 +786,25 @@ const Home = ({ userEmail, userRole }) => {
                                     Be among the first to share your
                                     CampusCare experience.
                                 </p>
+
                             </div>
                         )}
 
                     </div>
+
                 </div>
+
             </section>
 
-            {/* CTA */}
-            <section className="bg-slate-950 py-20 text-white">
-                <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
+            {/* =====================================================
+                CTA
+            ===================================================== */}
 
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-600 text-3xl shadow-xl shadow-indigo-600/20">
+            <section className="campus-cta-glow relative bg-slate-950 py-20 text-white">
+
+                <div className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6">
+
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-600 text-3xl shadow-xl shadow-indigo-600/20 transition duration-500 hover:rotate-6 hover:scale-110">
                         C
                     </div>
 
@@ -637,22 +826,28 @@ const Home = ({ userEmail, userRole }) => {
                                     '/register/student'
                                 )
                             }
-                            className="mt-8 rounded-xl bg-indigo-600 px-7 py-3.5 font-bold text-white shadow-xl shadow-indigo-600/20 transition hover:bg-indigo-500"
+                            className="mt-8 rounded-xl bg-indigo-600 px-7 py-3.5 font-bold text-white shadow-xl shadow-indigo-600/20 transition duration-300 hover:-translate-y-1 hover:bg-indigo-500 hover:shadow-indigo-500/30"
                         >
                             Create Your Account →
                         </button>
                     )}
 
                 </div>
+
             </section>
 
-            {/* FOOTER */}
+            {/* =====================================================
+                FOOTER
+            ===================================================== */}
+
             <footer className="border-t border-slate-800 bg-slate-950 text-slate-400">
+
                 <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
 
                     <div className="grid gap-10 md:grid-cols-4">
 
                         <div className="md:col-span-2">
+
                             <div className="flex items-center gap-3">
 
                                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 font-black text-white">
@@ -673,9 +868,11 @@ const Home = ({ userEmail, userRole }) => {
                                 platform built to improve communication,
                                 accountability and campus experiences.
                             </p>
+
                         </div>
 
                         <div>
+
                             <h3 className="font-bold text-white">
                                 Platform
                             </h3>
@@ -686,9 +883,11 @@ const Home = ({ userEmail, userRole }) => {
                                 <li>Technician Assignment</li>
                                 <li>Admin Analytics</li>
                             </ul>
+
                         </div>
 
                         <div>
+
                             <h3 className="font-bold text-white">
                                 Access
                             </h3>
@@ -735,6 +934,7 @@ const Home = ({ userEmail, userRole }) => {
                                 </li>
 
                             </ul>
+
                         </div>
 
                     </div>
@@ -751,7 +951,9 @@ const Home = ({ userEmail, userRole }) => {
                         </p>
 
                     </div>
+
                 </div>
+
             </footer>
 
         </div>

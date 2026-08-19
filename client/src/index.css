@@ -86,7 +86,6 @@ a {
    ========================================================= */
 
 @layer components {
-
     .glass-card {
         @apply rounded-2xl border border-slate-200/80 bg-white/80 shadow-xl shadow-slate-200/40 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/80 dark:shadow-black/20;
     }
@@ -133,44 +132,301 @@ a {
 }
 
 /* =========================================================
-   Animations
+   CampusCare Motion Graphics
    ========================================================= */
 
-@keyframes fadeIn {
-    from {
+@keyframes campusFadeUp {
+    0% {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(30px);
     }
 
-    to {
+    100% {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-@keyframes float {
+@keyframes campusFloat {
     0%,
     100% {
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
     }
 
     50% {
-        transform: translateY(-8px);
+        transform: translate3d(0, -14px, 0);
     }
 }
 
-.animate-fade-in {
-    animation: fadeIn 0.5s ease-out both;
+@keyframes campusFloatReverse {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(12px, 12px, 0);
+    }
 }
 
-.animate-float {
-    animation: float 5s ease-in-out infinite;
+@keyframes campusOrb {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    25% {
+        transform: translate3d(25px, -20px, 0) scale(1.08);
+    }
+
+    50% {
+        transform: translate3d(-10px, -35px, 0) scale(0.95);
+    }
+
+    75% {
+        transform: translate3d(-30px, 10px, 0) scale(1.06);
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
 }
+
+@keyframes campusGlow {
+    0%,
+    100% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.55;
+        transform: scale(1.15);
+    }
+}
+
+@keyframes campusPulse {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.45;
+        transform: scale(1.25);
+    }
+}
+
+@keyframes campusProgress {
+    0% {
+        transform: scaleX(0);
+        transform-origin: left;
+    }
+
+    100% {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+}
+
+@keyframes campusShimmer {
+    0% {
+        transform: translateX(-120%);
+    }
+
+    100% {
+        transform: translateX(120%);
+    }
+}
+
+@keyframes campusOrbit {
+    from {
+        transform: rotate(0deg) translateX(85px) rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg) translateX(85px) rotate(-360deg);
+    }
+}
+
+@keyframes campusParticle {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.6);
+    }
+
+    20% {
+        opacity: 0.8;
+    }
+
+    80% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(1);
+    }
+}
+
+/* Hero entrance */
+.campus-hero-content {
+    animation: campusFadeUp 0.9s ease-out both;
+}
+
+/* Delayed hero elements */
+.campus-hero-delay-1 {
+    animation-delay: 0.15s;
+}
+
+.campus-hero-delay-2 {
+    animation-delay: 0.3s;
+}
+
+.campus-hero-delay-3 {
+    animation-delay: 0.45s;
+}
+
+/* Main dashboard floating animation */
+.campus-dashboard-float {
+    animation: campusFloat 6s ease-in-out infinite;
+}
+
+/* Background moving orbs */
+.campus-orb {
+    animation: campusOrb 12s ease-in-out infinite;
+}
+
+.campus-orb-slow {
+    animation: campusOrb 17s ease-in-out infinite reverse;
+}
+
+/* Glow */
+.campus-glow {
+    animation: campusGlow 5s ease-in-out infinite;
+}
+
+/* Active indicator */
+.campus-pulse {
+    animation: campusPulse 2s ease-in-out infinite;
+}
+
+/* Progress */
+.campus-progress {
+    animation: campusProgress 1.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.campus-progress-delay {
+    animation-delay: 0.35s;
+}
+
+/* Moving shine across dashboard */
+.campus-shimmer {
+    position: relative;
+    overflow: hidden;
+}
+
+.campus-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 45%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.08),
+        transparent
+    );
+    transform: translateX(-120%);
+    animation: campusShimmer 5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Orbiting decoration */
+.campus-orbit {
+    animation: campusOrbit 12s linear infinite;
+}
+
+/* Floating particles */
+.campus-particle {
+    animation: campusParticle 5s ease-in-out infinite;
+}
+
+/* Cards */
+.campus-motion-card {
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.campus-motion-card:hover {
+    transform: translateY(-8px);
+    box-shadow:
+        0 25px 50px rgba(15, 23, 42, 0.12);
+}
+
+/* Statistics */
+.campus-stat-motion {
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+.campus-stat-motion:hover {
+    transform: translateY(-7px) scale(1.02);
+}
+
+/* CTA glow */
+.campus-cta-glow {
+    position: relative;
+    overflow: hidden;
+}
+
+.campus-cta-glow::before {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 9999px;
+    background: rgba(99, 102, 241, 0.2);
+    filter: blur(70px);
+    top: -120px;
+    left: 10%;
+    animation: campusGlow 7s ease-in-out infinite;
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   HIGH-LEVEL CAMPUSCARE MOTION GRAPHICS
+   ========================================================= */
+@keyframes ccAurora{0%,100%{transform:translate3d(-8%,-4%,0) scale(1)}33%{transform:translate3d(6%,3%,0) scale(1.12)}66%{transform:translate3d(-2%,8%,0) scale(.96)}}
+@keyframes ccGridDrift{from{transform:translate3d(0,0,0)}to{transform:translate3d(80px,40px,0)}}
+@keyframes ccScan{0%{transform:translateY(-120%);opacity:0}12%{opacity:1}88%{opacity:1}100%{transform:translateY(120%);opacity:0}}
+@keyframes ccRing{0%{transform:scale(.82);opacity:0}18%{opacity:.65}100%{transform:scale(1.55);opacity:0}}
+@keyframes ccFloatCard{0%,100%{transform:translate3d(0,0,0) rotateX(0) rotateY(0)}50%{transform:translate3d(0,-12px,0) rotateX(1deg) rotateY(-1deg)}}
+@keyframes ccDataFlow{0%{transform:translateX(-110%);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateX(110%);opacity:0}}
+@keyframes ccDotPulse{0%,100%{transform:scale(1);opacity:.45}50%{transform:scale(1.7);opacity:1}}
+@keyframes ccTextGlow{0%,100%{text-shadow:0 0 0 rgba(129,140,248,0)}50%{text-shadow:0 0 28px rgba(129,140,248,.35)}}
+.cc-hero-aurora{position:absolute;width:65vw;height:65vw;max-width:850px;max-height:850px;border-radius:9999px;background:radial-gradient(circle at 35% 35%,rgba(99,102,241,.28),transparent 42%),radial-gradient(circle at 65% 65%,rgba(139,92,246,.22),transparent 45%);filter:blur(35px);animation:ccAurora 16s ease-in-out infinite;pointer-events:none}
+.cc-hero-grid{position:absolute;inset:-25%;background-image:linear-gradient(rgba(129,140,248,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(129,140,248,.07) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(circle,black 0%,transparent 68%);-webkit-mask-image:radial-gradient(circle,black 0%,transparent 68%);animation:ccGridDrift 18s linear infinite;pointer-events:none}
+.cc-scan-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.cc-scan-layer::after{content:"";position:absolute;left:5%;right:5%;height:90px;background:linear-gradient(to bottom,transparent,rgba(129,140,248,.08),rgba(129,140,248,.22),transparent);filter:blur(8px);animation:ccScan 7s ease-in-out infinite}
+.cc-hero-text-glow{animation:ccTextGlow 5s ease-in-out infinite}
+.cc-dashboard-premium{animation:ccFloatCard 6s ease-in-out infinite;transform-style:preserve-3d;will-change:transform}
+.cc-dashboard-ring{position:absolute;inset:-34px;border:1px solid rgba(129,140,248,.16);border-radius:2.5rem;pointer-events:none}
+.cc-dashboard-ring::before,.cc-dashboard-ring::after{content:"";position:absolute;inset:12%;border:1px solid rgba(167,139,250,.12);border-radius:2rem;animation:ccRing 4.5s ease-out infinite}
+.cc-dashboard-ring::after{animation-delay:2.25s}
+.cc-data-line{position:relative;overflow:hidden}
+.cc-data-line::after{content:"";position:absolute;top:0;bottom:0;width:35%;background:linear-gradient(90deg,transparent,rgba(129,140,248,.7),transparent);animation:ccDataFlow 3.2s ease-in-out infinite}
+.cc-live-dot{animation:ccDotPulse 1.8s ease-in-out infinite;box-shadow:0 0 16px rgba(52,211,153,.7)}
+.cc-floating-mini-card{animation:campusFloatReverse 7s ease-in-out infinite}
+.cc-floating-mini-card-delay{animation-delay:1.8s}
+@media (prefers-reduced-motion:reduce){.cc-hero-aurora,.cc-hero-grid,.cc-scan-layer::after,.cc-dashboard-premium,.cc-dashboard-ring::before,.cc-dashboard-ring::after,.cc-data-line::after,.cc-live-dot,.cc-floating-mini-card,.cc-hero-text-glow{animation:none!important}}
 
 /* =========================================================
    Legacy compatibility
-   These allow old pages to remain usable while we migrate
-   them to Tailwind.
    ========================================================= */
 
 .hero-section {
@@ -199,5 +455,204 @@ a {
 @media (max-width: 640px) {
     html {
         font-size: 15px;
+    }
+}
+
+/* =========================================================
+   Accessibility
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* =========================================================
+   Immersive Award-Level Layer
+   ========================================================= */
+
+.cc-hero {
+    perspective: 1200px;
+}
+
+.cc-three-field {
+    z-index: -16;
+    opacity: .95;
+    mix-blend-mode: screen;
+    pointer-events: none;
+}
+
+.cc-scroll-progress {
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    transform-origin: left center;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #22d3ee);
+    box-shadow: 0 0 22px rgba(99,102,241,.75);
+    pointer-events: none;
+}
+
+.cc-hero-title {
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.cc-word-reveal {
+    display: inline-flex;
+    overflow: hidden;
+    vertical-align: top;
+}
+
+.cc-letter {
+    display: inline-block;
+    opacity: 0;
+    transform: translate3d(0, 110%, 0) rotateX(-55deg);
+    transform-origin: center bottom;
+    animation: ccLetterReveal 1s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+@keyframes ccLetterReveal {
+    0% {
+        opacity: 0;
+        transform: translate3d(0,110%,0) rotateX(-55deg);
+        filter: blur(8px);
+    }
+    55% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0,0,0) rotateX(0);
+        filter: blur(0);
+    }
+}
+
+.cc-hero-ghost {
+    position: absolute;
+    z-index: -12;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    font-size: clamp(5rem, 16vw, 15rem);
+    line-height: .8;
+    font-weight: 900;
+    letter-spacing: -.08em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(129,140,248,.065);
+    white-space: nowrap;
+    pointer-events: none;
+    animation: ccGhostDrift 18s ease-in-out infinite alternate;
+}
+
+@keyframes ccGhostDrift {
+    from {
+        transform: translate3d(-50%,0,0) rotate(-1deg);
+    }
+    to {
+        transform: translate3d(calc(-50% + 55px),22px,0) rotate(1deg);
+    }
+}
+
+.cc-magnetic {
+    --mag-x: 0px;
+    --mag-y: 0px;
+    transform: translate3d(var(--mag-x), var(--mag-y), 0);
+    transition:
+        transform .55s cubic-bezier(.16,1,.3,1),
+        box-shadow .45s cubic-bezier(.16,1,.3,1),
+        background-color .3s ease;
+    will-change: transform;
+}
+
+.cc-magnetic:hover {
+    box-shadow: 0 18px 45px rgba(79,70,229,.25);
+}
+
+.cc-dashboard-premium {
+    transform: translateZ(35px);
+}
+
+.cc-dashboard-premium::before {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    border-radius: 2.5rem;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(99,102,241,.16), transparent 55%);
+    filter: blur(22px);
+    z-index: -1;
+    animation: ccCoreGlow 5s ease-in-out infinite;
+}
+
+@keyframes ccCoreGlow {
+    0%,100% { opacity: .45; transform: scale(.94); }
+    50% { opacity: .95; transform: scale(1.06); }
+}
+
+.cc-dashboard-ring {
+    box-shadow:
+        0 0 60px rgba(99,102,241,.07),
+        inset 0 0 60px rgba(99,102,241,.04);
+}
+
+.cc-motion-section {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: ccSectionReveal .9s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+@keyframes ccSectionReveal {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1024px) {
+    .cc-three-field {
+        opacity: .42;
+    }
+
+    .cc-hero-ghost {
+        font-size: 18vw;
+    }
+}
+
+@media (max-width: 640px) {
+    .cc-three-field {
+        opacity: .22;
+    }
+
+    .cc-hero-ghost {
+        top: 18%;
+        font-size: 25vw;
+    }
+
+    .cc-letter {
+        animation-duration: .8s;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cc-letter,
+    .cc-hero-ghost,
+    .cc-dashboard-premium::before {
+        animation: none !important;
+    }
+
+    .cc-letter {
+        opacity: 1;
+        transform: none;
+        filter: none;
     }
 }
